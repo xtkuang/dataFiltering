@@ -7,7 +7,7 @@ import prisma from './prisma'
 import type { PrismaClient } from '@prisma/client'
 // import middlewareList from './middleware'
 import jwtAuthMiddleware from './middleware/jwtAuth'
-
+import globalResponseHandler from './middleware/globalResponse'
 declare module 'koa' {
   interface Context {
     prisma: PrismaClient
@@ -16,13 +16,14 @@ declare module 'koa' {
 const app = new Koa()
 app.context.prisma = prisma
 
-const router = new Router()
-
 //路由及处理
-routesAction.forEach(({ path, type, action }) => router[type](path, action))
 
+//中间件
 app.use(bodyParser())
+app.use(globalResponseHandler())
 app.use(jwtAuthMiddleware())
+const router = new Router()
+routesAction.forEach(({ path, type, action }) => router[type](path, action))
 app.use(router.routes())
 app.use(router.allowedMethods())
 

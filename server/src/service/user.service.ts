@@ -1,37 +1,77 @@
 import prisma from '../prisma'
 import * as jwt from 'jsonwebtoken'
 import type { JwtUserProps } from '../types'
+import { CustomError } from 'src/error'
+import * as bcrypt from 'bcrypt'
 class UserService {
   async createToken(user: JwtUserProps) {
     const { username, id, role } = user
     const token = jwt.sign({ username, id, role }, process.env.JWT_SECRET, {
-      expiresIn: '3h',
+      expiresIn: '1d',
     })
     return token
   }
   async register(username: string, password: string, role: string = 'admin') {
-    const user = await prisma.user.create({
-      data: {
-        username,
-        password,
-        role,
-      },
-    })
-    if (user) {
-      return Promise.resolve(user)
+    try {
+      const existUser = await prisma.user.findUnique({
+        where: {
+          username,
+        },
+      })
+      if (existUser) {
+        throw new CustomError(400, '注册失败，用户名已存在')
+      }
+      const hashedPassword = await bcrypt.hash(password, 10)
+
+      const user = await prisma.user.create({
+        data: {
+          username,
+          password: hashedPassword,
+          role,
+        },
+      })
+      if (user) {
+        return Promise.resolve({
+          id: user.id,
+          username: user.username,
+          role: user.role,
+          token: await this.createToken(user),
+        })
+      }
+    } catch (error) {
+      console.log('error', error)
+      if (error instanceof CustomError) {
+        throw error
+      }
+      throw new CustomError(400, '注册失败，参数错误')
     }
-    return Promise.reject(null)
   }
   async login(username: string, password: string) {
-    const user = await prisma.user.findUnique({
-      where: {
-        username,
-      },
-    })
-    if (user && user.password === password) {
-      return Promise.resolve(user)
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          username,
+        },
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          password: true,
+        },
+      })
+      if (user && (await bcrypt.compare(password, user.password))) {
+        return Promise.resolve({
+          id: user.id,
+          username: user.username,
+          role: user.role,
+          token: await this.createToken(user),
+        })
+      }
+      return Promise.reject(null)
+    } catch (error) {
+      console.log('error', error)
+      throw new CustomError(400, '登录失败，用户名或密码错误')
     }
-    return Promise.reject(null)
   }
   async getUser(username: string) {
     const user = await prisma.user.findUnique({

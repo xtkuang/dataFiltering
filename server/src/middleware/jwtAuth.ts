@@ -1,30 +1,26 @@
 import * as jwt from 'jsonwebtoken'
 import * as Koa from 'koa'
+import { CustomError } from 'src/error'
 const whiteList = ['/user/login', '/user/register']
 function jwtAuthMiddleware() {
   return async (ctx: Koa.Context, next: Koa.Next) => {
     const token = ctx.headers.authorization?.split(' ')[1] // Bearer token
     console.log('path:', ctx.path)
     if (whiteList.includes(ctx.path)) {
-      await next()
-      return
+      return await next()
     }
     if (!token) {
-      ctx.status = 401
-      ctx.body = { code: 401, message: '未授权' }
-      return
+      throw new CustomError(401, '未授权')
     }
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
       ctx.state.user = decoded
     } catch (error) {
-      ctx.status = 401
-      ctx.body = { code: 401, message: '未授权' }
-      return
+      throw new CustomError(401, '未授权')
     }
 
-    await next()
+    return await next()
   }
 }
 export default jwtAuthMiddleware

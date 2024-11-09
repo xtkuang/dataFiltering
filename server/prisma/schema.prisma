@@ -13,7 +13,7 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   username  String   @unique
-  email     String   @unique @default("")
+  // email     String   @unique @default("")
   password  String
   role      String
   createdAt DateTime @default(now())
