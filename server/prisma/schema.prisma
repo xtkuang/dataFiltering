@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url = "file:./db.sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  account   String   @unique
+  password  String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  name      String
+  classify String //项目分类
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  equipments Equipment[]
+}
+
+model Equipment {
+  id        String   @id @default(cuid())
+  name      String
+  type      String
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+  workstations Workstation[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Workstation {
+  id        String   @id @default(cuid())
+  name      String
+  type      String
+  designHours Int //设计工时
+  electHours  Int //电气工时 
+  assemblyHours Int //装配工时
+  equipmentId String
+  equipment Equipment @relation(fields: [equipmentId], references: [id])
+  materials Material[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Material {
+ 
+  id        String   @id @default(cuid())
+  name      String
+  classify String //物料种类
+  type      String //型号，图号
+  brand     String //品牌
+  lowestPrice Float //最低价
+  highestPrice Float //最高价
+  averagePrice Float //均价
+  code      String
+  workstationId String
+  workstation Workstation @relation(fields: [workstationId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
