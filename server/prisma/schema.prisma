@@ -7,14 +7,13 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url = "file:./db.sqlite"
+  url = env("DATABASE_URL")
 }
 
 model User {
   id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  account   String   @unique
+  username  String   @unique
+  email     String   @unique @default("")
   password  String
   role      String
   createdAt DateTime @default(now())
