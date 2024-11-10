@@ -22,4 +22,5 @@ export const register = async (ctx: Context) => {
   }
   const result = await UserService.register(username, password, role) // 调用 UserService 的 register 方法
   return { result } // 返回注册结果
+  
 }

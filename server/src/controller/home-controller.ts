@@ -3,6 +3,9 @@
  */
 import { Context } from 'koa';
 import homeService from '../service/home-service';
+import dataFilteringService from '../service/dataFiltering.service';
+import koaBody from 'koa-body';
+import exp = require('constants');
 
 /**
  * 返回hello world
@@ -44,3 +47,15 @@ export const postTest = async (ctx: Context) => {
   const res = await homeService.postTest(params);
   ctx.body = res;
 };
+
+export const getData=async(ctx:Context)=>{
+  const params=ctx.request.body;
+  const res=await dataFilteringService.getData(params);
+  ctx.body=res;
+}
+
+export const uploadFile=async(ctx:Context)=>{
+  const files=ctx.request.files;
+  const res=await dataFilteringService.parseExcel(files);
+  ctx.body=res;
+}
