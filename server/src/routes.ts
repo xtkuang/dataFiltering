@@ -4,14 +4,18 @@ import {
   getPersonInfo,
   postTest,
 } from './controller/home-controller'
-import { login, register } from './controller/user.controller'
-import express from 'express';
+import { getUser, login, register } from './controller/user.controller'
 import FileUploadService from './service/fileUpload.service';
-
-const router = express.Router();
-
-router.post('/upload', (req, res) => {
-    FileUploadService.uploadFile(req, res);
-});
-
-export default router;
+import { Context } from 'koa';
+import dataFiltering from './service/dataFiltering.service';
+export default [
+  { path: '/', type: 'get', action: hello },
+  { path: '/person/:name', type: 'get', action: helloName },
+  { path: '/info', type: 'get', action: getPersonInfo },
+  { path: '/post', type: 'post', action: postTest },
+  { path: '/user/login', type: 'post', action: login },
+  { path: '/user/register', type: 'post', action: register},
+  { path: '/upload', type: 'post', action: FileUploadService.uploadFile},
+  {path:'/dataFiltering',type:'get',action:dataFiltering.getData},
+  {path:'/user/info',type:'get',action:getUser}
+]

@@ -14,42 +14,50 @@ class DataFilteringService {
         const rows=data.slice(4);
         const project =await prisma.project.create({
             data:{
-                projectName:"导入项目",
-                projectCode:rows[1] || "",
-
-                classfy:"供应商"
+                id:String(rows[1] ||""),
+                name:String(rows[2]||""),
+                classify:String(rows[3] || ""),
+                //classfy:"供应商"
             }
         });
         for(const row of rows){
             if(!row[2])continue;
             const equipment=await prisma.equipment.create({
                 data:{
-                    name:row[2] || "",
-                    type:row[4] || "",
+                    name:String(rows[5] || ""),
+                    type:String(rows[6] || ""),
+                    //classify:String(rows[7] ||""),
                     projectId:project.id
                 }
             })
             const workStation=await prisma.workstation.create({
                 data:{
-                    name:row[6] || "",
-                    type:row[7] || "",
-                    designHours:row[8] || 0,
-                    electHousrs: row[9] ||0,
-                    assemblyHours:row[10] || 0,
+                    id:String(rows[8] || ""),
+                    name:String(rows[9] || ""),
+                    type: String(rows[10] || ""),
+                    designHours:Number(rows[11] || 0),
+                    electHours: Number(rows[12] ||0),
+                    assemblyHours:Number(rows[13] || 0),
                     equipmentId:equipment.id
                 }
             })
             const material=await prisma.material.create({
                 data:{
-                    name:row[11] || "",
-                    classify:row[12] || "",
-                    type:row[13] || "",
-                    brand:row[14] || "",
-                    lowestPrice:row[15] || 0,
-                    highestPrice:row[16] || 0,
-                    averagePrice:row[17] || 0,
-                    code:row[18] || "",
-                    workstationId:workStation.id
+                    code:String(rows[14]||""),
+                    name:String(rows[15]||""),
+                    classify:String(rows[16]||""),
+                    type: String(rows[17] ||""),
+                    
+                    brand:String(rows[18] || ""),
+                    lowestPrice: Number(rows[19] || 0),
+                    highestPrice: Number(rows[20] || 0),
+                    averagePrice: Number(rows[21] || 0),
+                    
+                    workstation:{
+                        connect:{
+                            id:workStation.id
+                        }
+                    }
                 }
             })
         }
@@ -64,18 +72,32 @@ class DataFilteringService {
     async getData(params:any){
         const data=await prisma.project.findMany({
             where:{
-                projectName:params.projectName || "",
-                projectCode:params.projectCode || "",
-                classfy:params.classfy || "",
-                material:{
-                    name:params.materialName || "",
-                    classify:params.materialClassify || "",
-                    type:params.materialType || "",
+                name:params.projectName || "",
+                id:params.projectCode || "",
+                //classfy:params.classfy || "",
+                equipments:{
+                    some:{
+                        name:params.equipmentName || "",
+                        type:params.equipmentType || "",
+                        workstations:{
+                            some:{
+                                name:params.workStationName || "",
+                                type:params.workStationType || "",
+                                designHours:params.designHours || 0,
+                                electHours:params.electHours || 0,
+                                assemblyHours:params.assemblyHours || 0,
+                                materials:{
+                                    some:{
+                                        name:params.materialName || "",
+                                        classify:params.materialClassify || "",
+                                        type:params.materialType || "",
+                                    }
+                                }
+                            }
+                        }
+                    },
                 },
-                workStation:{
-                    name:params.workStationName || "",
-                    type:params.workStationType || "",
-                }
+                
             }
         })
         return data;
