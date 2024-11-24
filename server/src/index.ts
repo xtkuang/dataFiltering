@@ -1,10 +1,13 @@
 import * as Koa from 'koa'
 import * as Router from '@koa/router'
 import * as bodyParser from 'koa-bodyparser'
+import * as cors from 'koa2-cors'
 import { PORT } from './config'
 import routesAction from './routes'
 import prisma from './prisma'
 import type { PrismaClient } from '@prisma/client'
+import  koaBody from 'koa-body'
+import * as filepath from 'path'
 // import middlewareList from './middleware'
 import jwtAuthMiddleware from './middleware/jwtAuth'
 import globalResponseHandler from './middleware/globalResponse'
@@ -15,6 +18,21 @@ declare module 'koa' {
 }
 const app = new Koa()
 app.context.prisma = prisma
+//console.log(filepath.join(__dirname, '../upload'));
+app.use(koaBody({
+  multipart: true,
+  //formData: true,
+  formidable: {
+    uploadDir: filepath.join(__dirname, '../upload'),
+    keepExtensions: true,
+  },
+}))
+app.use(cors({
+  origin: '*',
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  exposeHeaders: ['Content-Length', 'Date', 'X-Powered-By'],
+}))
 app.use(bodyParser())
 app.use(globalResponseHandler())
 app.use(jwtAuthMiddleware())

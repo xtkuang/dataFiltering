@@ -32,9 +32,10 @@ model Project {
 
 model Equipment {
   id          String        @id @default(cuid()) //默认生成的id
+  code        String        //设备编号
   name        String        //设备名称
   type        String        //设备类型
-  project     Project       @relation(fields: [projectId], references: [id]) //关联的项目
+  project     Project       @relation(fields: [projectId], references: [code]) //关联的项目
   projectId   String        //项目id
   workstations Workstation[] // 关联的工位
   createdAt   DateTime      @default(now()) //默认生成时间
@@ -42,6 +43,7 @@ model Equipment {
 }
 model Workstation {
   id            String      @id @default(cuid()) //默认生成的id
+  code          String      //工位编号
   name          String      //工位名称
   type          String      //工位类型
   designHours   Int         // 设计工时
@@ -58,6 +60,7 @@ model Material {
   id            String      @id @default(cuid())
   code          String      // 物料编号
   name          String      // 物料名称
+  requestNumber String      // 需求数量
   category      String      // 物料分类
   modelNumber   String      // 型号/图号
   brand         String      // 品牌

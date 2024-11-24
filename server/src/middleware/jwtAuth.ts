@@ -4,7 +4,7 @@ import { CustomError } from 'src/error'
 const whiteList = ['/user/login', '/user/register']
 function jwtAuthMiddleware() {
   return async (ctx: Koa.Context, next: Koa.Next) => {
-    const token = ctx.headers.authorization?.split(' ')[1] // Bearer token
+    const token = ctx.headers.cookie?.split('=')[1] // Bearer token
     console.log('path:', ctx.path)
     if (whiteList.includes(ctx.path)) {
       return await next()

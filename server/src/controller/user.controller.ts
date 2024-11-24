@@ -6,7 +6,9 @@ export const login = async (ctx: Context) => {
     username: string
     password: string
   }
-  const result = await UserService.login(username, password) // 调用 UserService 的 login 方法
+  const result = await UserService.login(username, password)
+   // 调用 UserService 的 login 方法
+   ctx.cookies.set('token', result.token);
   return { token: result.token } // 返回登录结果
 }
 

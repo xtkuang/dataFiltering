@@ -1,18 +1,12 @@
 import * as multer from 'multer';
 import * as xlsx from 'xlsx';
 import * as path from 'path';
-import koaBody from 'koa-body';
+//import koaBody from 'koa-body';
 import { Context } from 'koa';
+import dataFilteringService from './dataFiltering.service';
+import { fileURLToPath } from 'url';
 
 // Configure multer for file uploads
-const uploader = koaBody({
-	multipart: true,
-	formidable: {
-		uploadDir: path.join(__dirname, '/uploads'), // 设置文件上传目录
-		keepExtensions: true, // 保持文件的后缀
-		maxFieldsSize: 20 * 1024 * 1024, // 文件上传大小 MB * KB * B
-	},
-})
 
 //const upload = multer({ storage: storage });
 
@@ -21,11 +15,16 @@ class FileUploadService {
         try {
             const files = ctx.request.files;
             const file=files.file;
-            const filePath = files.path;
-            this.readExcelFile(filePath.toString());
+            const filePath=files.path;
+            console.log(filePath);
+            const excel=this.readExcelFile(filePath.toString());
             ctx.body = { message: 'File uploaded successfully' };
+            dataFilteringService.parseExcel(excel);
         } catch (err) {
+            console.log(ctx.request.files.path);
             ctx.status = 500;
+            console.log(err);
+            
             ctx.body = { error: err.message };
         }
     }
