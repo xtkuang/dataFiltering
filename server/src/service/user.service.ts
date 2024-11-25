@@ -9,6 +9,7 @@ class UserService {
     const token = jwt.sign({ username, id, role }, process.env.JWT_SECRET, {
       expiresIn: '1d',
     })
+
     return token
   }
   async register(username: string, password: string, role: string = 'admin') {
@@ -19,7 +20,7 @@ class UserService {
         },
       })
       if (existUser) {
-        throw new CustomError(400, '注册失败，用户名已存在')
+        throw new CustomError(201, '注册失败，用户名已存在')
       }
       const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -43,7 +44,7 @@ class UserService {
       if (error instanceof CustomError) {
         throw error
       }
-      throw new CustomError(400, '注册失败，参数错误')
+      throw new CustomError(201, '注册失败，参数错误')
     }
   }
   async login(username: string, password: string) {
@@ -70,7 +71,7 @@ class UserService {
       return Promise.reject(null)
     } catch (error) {
       console.log('error', error)
-      throw new CustomError(400, '登录失败，用户名或密码错误')
+      throw new CustomError(201, '登录失败，用户名或密码错误')
     }
   }
   async getUser(username: string) {
@@ -81,6 +82,16 @@ class UserService {
     })
 
     return Promise.resolve(user)
+  }
+  async getUserList() {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        role: true,
+      },
+    })
+    return Promise.resolve(users)
   }
 }
 

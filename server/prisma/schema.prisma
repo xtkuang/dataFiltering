@@ -19,7 +19,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
+model Session {
+  id        String   @id @default(cuid()) //默认生成的id
+  token     String   @unique
+  userId    String   @unique
+  destruction DateTime 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 model Project {
   id          String      @id @default(cuid()) //默认生成的id
   name        String      //项目名称

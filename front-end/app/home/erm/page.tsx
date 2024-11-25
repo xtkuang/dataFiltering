@@ -3,7 +3,7 @@ import { Table, Row, Col, Button, Upload, message, Space, Input } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { observer } from 'mobx-react'
 import { SearchOutlined, UploadOutlined } from '@ant-design/icons'
-import type { InputRef, TableColumnType, UploadProps } from 'antd'
+import type { InputRef, TableColumnType, TableProps, UploadProps } from 'antd'
 import Highlighter from 'react-highlight-words'
 import useStores from '@/stores'
 import {
@@ -127,6 +127,19 @@ function ErmTable({
     clearFilters()
     setSearchText('')
   }
+  const rowSelection: TableProps<DataType>['rowSelection'] = {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+      console.log(
+        `selectedRowKeys: ${selectedRowKeys}`,
+        'selectedRows: ',
+        selectedRows
+      )
+    },
+    getCheckboxProps: (record: DataType) => ({
+      disabled: record.name === 'Disabled User', // Column configuration not to be checked
+      name: record.name,
+    }),
+  }
   const getColumnSearchProps = (
     dataIndex: DataIndex
   ): TableColumnType<DataType> => ({
@@ -226,6 +239,7 @@ function ErmTable({
   })
   return (
     <Table
+      rowSelection={{ ...rowSelection }}
       size="small"
       pagination={false}
       style={{ width: '100%' }}

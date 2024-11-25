@@ -1,53 +1,80 @@
-import axios, {
-  AxiosRequestConfig,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from 'axios'
-import { env } from 'process'
+import axios from 'axios'
+import { message } from 'antd'
+// import store from '@/store'
 
-// 创建一个 axios 实例
-const instance = axios.create({
-  baseURL: env.BASE_URL, // 替换为你的 API 基础 URL
-  timeout: 10000, // 请求超时时间
+// create an axios instance
+const service = axios.create({
+  baseURL: 'http://127.0.0.1:8000', // url = base url + request url
+  // withCredentials: true, // send cookies when cross-domain requests
+  // timeout: 5000, // request timeout
+  headers: { 'Content-Type': 'application/json;charset=UTF-8' },
 })
 
-// 请求拦截器
-instance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    // 在发送请求之前做些什么
-    console.log('请求拦截:', config)
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+// request interceptor
+service.interceptors.request.use(
+  (config) => {
+    // do something before request is sent
+    // *为每个请求的请求头增添 token
+
+    if (localStorage?.getItem('token')) {
+      // let each request carry token
+      // ['X-Token'] is a custom headers key
+      // please modify it according to the actual situation
+      config.headers['Authorization'] =
+        'Bearer ' + localStorage.getItem('token')
     }
     return config
   },
   (error) => {
-    // 对请求错误做些什么
+    // do something with request error
+    console.log(error) // for debug
     return Promise.reject(error)
   }
 )
 
-// 响应拦截器
-instance.interceptors.response.use(
-  (response: AxiosResponse) => {
-    // 对响应数据做些什么
-    console.log('响应拦截:', response)
-    return response.data
+// response interceptor
+service.interceptors.response.use(
+  /**
+   * If you want to get http information such as headers or status
+   * Please return  response => response
+   */
+
+  /**
+   * Determine the request status by custom code
+   * Here is just an example
+   * You can also judge the status by HTTP Status Code
+   */
+  (response) => {
+    const res = response.data
+
+    // if the custom code is not 200, it is judged as an error.
+    if (res.code !== 200) {
+      message.error(res.msg || 'Error')
+      // !处理登录状态失效的逻辑
+      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+      // if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+      //   // to re-login
+      //   MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
+      //     confirmButtonText: 'Re-Login',
+      //     cancelButtonText: 'Cancel',
+      //     type: 'warning'
+      //   }).then(() => {
+      //     store.dispatch('user/resetToken').then(() => {
+      //       location.reload()
+      //     })
+      //   })
+      // }
+      return Promise.reject(new Error(res.message || 'Error'))
+    } else {
+      return Promise.resolve(response.data)
+    }
   },
   (error) => {
-    // 对响应错误做些什么
+    console.log('err' + error) // for debug
+    message.error(error.message)
+
     return Promise.reject(error)
   }
 )
 
-// 封装的网络请求函数
-export const request = async (url: string, config?: AxiosRequestConfig) => {
-  try {
-    const response = await instance.get(url, config)
-    return response
-  } catch (error) {
-    console.error('请求失败:', error)
-    throw error
-  }
-}
+export default service

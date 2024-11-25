@@ -13,7 +13,7 @@ export default function globalResponseHandler() {
         msg: 'success',
       }
     } catch (error) {
-      let code = 500
+      let code = 400
       let errorMessage = 'unknown error'
 
       if (error instanceof CustomError) {
