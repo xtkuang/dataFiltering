@@ -4,6 +4,7 @@ import {
   getPersonInfo,
   postTest,
   uploadFile,
+  getData
 } from './controller/home-controller'
 import {
   getUser,
@@ -28,7 +29,7 @@ export default [
   { path: '/user/login', type: 'post', action: login },
   { path: '/user/register', type: 'post', action: register },
   { path: '/upload', type: 'post', action: uploadFile },
-  { path: '/dataFiltering', type: 'get', action: dataFiltering.getData },
+  { path: '/dataFiltering', type: 'get', action: getData },
   { path: '/user/info', type: 'get', action: getUser },
   { path: '/user/list', type: 'get', action: getUserList },
   { path: '/user/logout', type: 'post', action: logout },
