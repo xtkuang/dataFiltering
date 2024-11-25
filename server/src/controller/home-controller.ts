@@ -51,7 +51,7 @@ export const postTest = async (ctx: Context) => {
 export const getData=async(ctx:Context)=>{
   const params=ctx.request.body;
   const res=await dataFilteringService.getData(params);
-  ctx.body=res;
+  return res;
 }
 
 export const uploadFile=async(ctx:Context)=>{
