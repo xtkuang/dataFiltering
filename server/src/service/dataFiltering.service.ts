@@ -1,7 +1,7 @@
 import prisma from '../prisma'
 import * as XLSX from 'xlsx'
 
-import koaBody from 'koa-body'
+//import koaBody from 'koa-body'
 import * as fs from 'fs'
 //import { Context } from 'koa';
 class DataFilteringService {
@@ -9,7 +9,9 @@ class DataFilteringService {
     async parseExcel(files:any) {
        
        try {
+        //console.log(files);
         const filePath=files.file.filepath;
+        //const filePath="./upload/XR-AL231232项目分类、设备、工站物料导入表11.19.xlsx";
         console.log(filePath);
         const fileBuffer=fs.readFileSync(filePath);
         const workbook=XLSX.read(fileBuffer,{type:"buffer"});
@@ -17,7 +19,7 @@ class DataFilteringService {
         const data=XLSX.utils.sheet_to_json(worksheet,{header:1});
         const rows=data.slice(4);
         //console.log(rows);
-        let n=0;
+        //let n=0;
         for(const row of rows){
             const ifexist_project=await prisma.project.findFirst({
                 where:{
@@ -43,6 +45,8 @@ class DataFilteringService {
                     materials:true
                 }
             })
+            //console.log(String(row[2]));
+            //break;
             if(ifexist_project&&!ifexist_equipment&&!ifexist_workStation){
                 await prisma.project.update({
                     where:{
@@ -81,7 +85,7 @@ class DataFilteringService {
                         lowestPrice:Number(row[19] || 0),
                         highestPrice:Number(row[20] || 0),
                         averagePrice:Number(row[21] || 0),
-                        workstationCode:workStation.code
+                        workstationCode:String(row[7])||""
                     }
                 })
             }else if(ifexist_project&&ifexist_equipment&&!ifexist_workStation){
@@ -135,7 +139,8 @@ class DataFilteringService {
                         }
                     })
                 }else{
-                        console.log("数据已存在");
+                        //console.log("数据已存在");
+                        let n=0;
                 }   
             }else if(!ifexist_project&&!ifexist_equipment&&!ifexist_workStation){
                 
@@ -182,7 +187,7 @@ class DataFilteringService {
                 }
             }
         console.log("数据解析完成");
-        n++;
+        //n++;
         return data;
        } catch (error) {
         console.error(error);
