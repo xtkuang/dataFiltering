@@ -5,7 +5,8 @@ import type {
   WorkstationType,
   MaterialType,
 } from './modules'
-// ... existing code ...
+import DataFilterApi from '@/api/dataFilter.api'
+
 const mockData: ProjectType[] = [
   {
     id: '1',
@@ -90,6 +91,11 @@ class ErmData {
     if (this.selectedWorkstation) {
       this.selectedMaterial = this.selectedWorkstation?.materials[materialIndex]
     }
+  }
+  getRemoteData() {
+    DataFilterApi.getData().then((res) => {
+      console.log(res)
+    })
   }
   get randerEquipmentData() {
     return this.selectedProject?.equipments

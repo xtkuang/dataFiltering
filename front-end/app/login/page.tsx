@@ -1,12 +1,12 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { Form, Input, Button, message } from 'antd'
 import useStores from '@/stores'
 import { useRouter } from 'next/navigation'
 const LoginPage: React.FC = () => {
   const { user } = useStores()
   const router = useRouter()
-
+  const [loading, setLoading] = useState(false)
   return (
     <div className="h-screen flex justify-center items-center bg-gradient-to-r from-blue-200 to-blue-500">
       <div className="bg-white shadow-lg rounded-lg p-10 w-96">
@@ -16,16 +16,19 @@ const LoginPage: React.FC = () => {
 
         <Form
           onFinish={async (values) => {
+            setLoading(true)
             await user
               .login(values)
               .then((res) => {
                 if ((res as any).code == 200) {
                   router.push('/home/erm')
                   router.refresh()
+                  setLoading(false)
                 }
               })
               .catch((err) => {
                 message.error('用户名或密码错误')
+                setLoading(false)
               })
           }}>
           <Form.Item
@@ -49,7 +52,8 @@ const LoginPage: React.FC = () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="w-full hover:bg-blue-700 transition duration-200">
+              className="w-full hover:bg-blue-700 transition duration-200"
+              loading={loading}>
               登录
             </Button>
           </Form.Item>

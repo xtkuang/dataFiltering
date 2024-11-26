@@ -93,7 +93,7 @@ export const register = async (ctx: Context) => {
     password: string
     role: string
   }
-  if (ctx.state.user.role === 'user') {
+  if (ctx.state?.user?.role === 'user') {
     throw new CustomError(201, '用户无权限')
   }
   const result = await UserService.register(username, password, role) // 调用 UserService 的 register 方法

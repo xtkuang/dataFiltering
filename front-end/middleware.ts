@@ -6,13 +6,20 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl
   const token = request.cookies.get('token')?.value
   const baseUrl = process.env.BASE_URL
-  const auth = await fetch(`${baseUrl}/user/auth`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }).then((res) => res.json())
+  let auth = null
+  if (token) {
+    try {
+      auth = await fetch(`${baseUrl}/user/auth`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => res.json())
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
-  if (auth.code !== 200) {
+  if (auth?.code !== 200) {
     url.pathname = '/login'
     return NextResponse.rewrite(url)
   }
