@@ -1,5 +1,15 @@
 'use client'
-import { Table, Row, Col, Button, Upload, message, Space, Input } from 'antd'
+import {
+  Table,
+  Row,
+  Col,
+  Button,
+  Upload,
+  message,
+  Space,
+  Input,
+  Modal,
+} from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { observer } from 'mobx-react'
 import { SearchOutlined, UploadOutlined } from '@ant-design/icons'
@@ -13,10 +23,14 @@ import {
   WorkstationType,
   MaterialType,
 } from '@/stores/modules'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useState } from 'react'
 import { FilterDropdownProps } from 'antd/es/table/interface'
+const { Search } = Input
 export default observer(function Home() {
+  useEffect(() => {
+    // ermData.getRemoteData()
+  }, [])
   const { ermData } = useStores()
   const projectColumns = [
     { title: '项目编号', dataIndex: 'code' },
@@ -32,58 +46,67 @@ export default observer(function Home() {
   const workstationColumns = [
     { title: '工位编号', dataIndex: 'id' },
     { title: '工位名称', dataIndex: 'name' },
+    { title: '工位属性', dataIndex: 'type' },
     { title: '设计工时', dataIndex: 'designHours' },
     { title: '电气工时', dataIndex: 'electHours' },
     { title: '装配工时', dataIndex: 'assemblyHours' },
   ]
 
   const materialColumns = [
+    { title: '物料分类', dataIndex: 'category' },
     { title: '物料编号', dataIndex: 'code' },
     { title: '物料名称', dataIndex: 'name' },
-    { title: '型号/规格', dataIndex: 'modelNumber' },
+    { title: '型号/图号', dataIndex: 'modelNumber' },
+    { title: '需求数量', dataIndex: 'requestNumber' },
     { title: '品牌', dataIndex: 'brand' },
     { title: '最低价', dataIndex: 'lowestPrice' },
     { title: '最高价', dataIndex: 'highestPrice' },
+    { title: '均价', dataIndex: 'averagePrice' },
   ]
-
   return (
     <>
-      <Row style={{ marginBottom: '16px' }}>
-        <Col flex="1">
+      <div className="flex flex-col justify-between h-full gap-4 pb-4">
+        <div className="basis-1/12 flex gap-4">
           <UploadButton />
-        </Col>
-      </Row>
-      <Row className="h-2/5" style={{ marginBottom: '16px' }} gutter={[16, 16]}>
-        <Col flex="1" className="">
-          <ErmTable
-            columns={projectColumns}
-            dataSource={ermData.randerProjects}
-            callBack={(index) => {
-              ermData.setSelectedProject(index)
+          <ExportButton></ExportButton>
+          <Search
+            placeholder="input search text"
+            onSearch={(value, e, info) => {
+              console.log(info?.source, value)
             }}
+            style={{ width: 200 }}
           />
-        </Col>
-        <Col flex="1">
-          <ErmTable
-            columns={equipmentColumns}
-            dataSource={ermData.randerEquipmentData}
-            callBack={(index) => {
-              ermData.setSelectedEquipment(index)
-            }}
-          />
-        </Col>
-        <Col flex="2">
-          <ErmTable
-            columns={workstationColumns}
-            dataSource={ermData.randerWorkstationData}
-            callBack={(index) => {
-              ermData.setSelectedWorkstation(index)
-            }}
-          />
-        </Col>
-      </Row>
-      <Row className="h-2/5">
-        <Col flex="1">
+        </div>
+        <div className="basis-5/12 flex flex-row gap-4">
+          <div className="basis-3/12">
+            <ErmTable
+              columns={projectColumns}
+              dataSource={ermData.randerProjects}
+              callBack={(index) => {
+                ermData.setSelectedProject(index)
+              }}
+            />
+          </div>
+          <div className="basis-3/12">
+            <ErmTable
+              columns={equipmentColumns}
+              dataSource={ermData.randerEquipmentData}
+              callBack={(index) => {
+                ermData.setSelectedEquipment(index)
+              }}
+            />
+          </div>
+          <div className="basis-6/12">
+            <ErmTable
+              columns={workstationColumns}
+              dataSource={ermData.randerWorkstationData}
+              callBack={(index) => {
+                ermData.setSelectedWorkstation(index)
+              }}
+            />
+          </div>
+        </div>
+        <div className="basis-5/12">
           <ErmTable
             columns={materialColumns}
             dataSource={ermData.randerMaterialData}
@@ -91,8 +114,8 @@ export default observer(function Home() {
               ermData.setSelectedMaterial(index)
             }}
           />
-        </Col>
-      </Row>
+        </div>
+      </div>
     </>
   )
 })
@@ -108,6 +131,7 @@ function ErmTable({
   const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchedColumn] = useState('')
   const searchInput = useRef<InputRef>(null)
+  const [select, setSelect] = useState([])
   type DataIndex =
     | keyof ProjectType
     | keyof EquipmentType
@@ -128,12 +152,15 @@ function ErmTable({
     setSearchText('')
   }
   const rowSelection: TableProps<DataType>['rowSelection'] = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        'selectedRows: ',
-        selectedRows
-      )
+    // onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+    //   console.log(
+    //     `selectedRowKeys: ${selectedRowKeys}`,
+    //     'selectedRows: ',
+    //     selectedRows
+    //   )
+    // },
+    onSelect: (selected, type, changeRows) => {
+      console.log('选中的行:', selected, type, changeRows)
     },
     getCheckboxProps: (record: DataType) => ({
       disabled: record.name === 'Disabled User', // Column configuration not to be checked
@@ -232,11 +259,21 @@ function ErmTable({
     if ('dataIndex' in column) {
       return {
         ...column,
-        ...getColumnSearchProps(column.dataIndex as DataIndex),
+        // ...getColumnSearchProps(column.dataIndex as DataIndex),
+        ellipsis: true,
       }
     }
     return column
   })
+  // const addEllipsis = (columns: ColumnsType<DataType>) => {
+  //   return columns.map((col) => {
+  //     return {
+  //       ...col,
+  //       ellipsis: true,
+  //     }
+  //   })
+  // }
+  // addEllipsis(columns)
   return (
     <Table
       rowSelection={{ ...rowSelection }}
@@ -279,3 +316,50 @@ const UploadButton: React.FC = () => (
     <Button icon={<UploadOutlined />}>导入Excel</Button>
   </Upload>
 )
+const ExportButton: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [showExcel, setShowExcel] = useState(false)
+  const showModal = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleOk = () => {
+    // 这里添加导出逻辑
+    message.success('导出成功')
+    setIsModalOpen(false)
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+  const columns = [
+    { title: '项目编号', dataIndex: 'code' },
+    { title: '项目名称', dataIndex: 'name' },
+    { title: '设备编号', dataIndex: 'equipmentCode' },
+    { title: '设备名称', dataIndex: 'equipmentName' },
+    { title: '工位编号', dataIndex: 'workstationCode' },
+    { title: '工位名称', dataIndex: 'workstationName' },
+    { title: '物料编号', dataIndex: 'materialCode' },
+    { title: '物料名称', dataIndex: 'materialName' },
+    { title: '需求数量', dataIndex: 'requestNumber' },
+  ]
+  return (
+    <>
+      <Button onClick={showModal}>导出Excel</Button>
+      {/* <Modal
+        wrapClassName="w-full"
+        open={showExcel}
+        modalRender={(node) => node}>
+        <Table columns={columns} dataSource={[]}></Table>
+      </Modal> */}
+
+      <Modal
+        title="导出确认"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}>
+        <p>确定要导出当前选中的数据吗?</p>
+      </Modal>
+    </>
+  )
+}

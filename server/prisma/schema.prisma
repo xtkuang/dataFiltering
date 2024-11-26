@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id        String   @default(cuid()) //默认生成的id
+  id        String   @id @default(cuid()) //默认生成的id
   username  String   @unique
   // email     String   @unique @default("")
   password  String
