@@ -17,6 +17,7 @@ import {
   updatePassword,
   resetPassword,
   updateUser,
+  privateRegister
 } from './controller/user.controller'
 import FileUploadService from './service/fileUpload.service'
 import { Context } from 'koa'
@@ -38,4 +39,5 @@ export default [
   { path: '/user/updatePassword', type: 'post', action: updatePassword },
   { path: '/user/resetPassword', type: 'post', action: resetPassword },
   { path: '/user/update', type: 'post', action: updateUser },
+  { path: '/user/privateRegister', type: 'post', action: privateRegister },
 ]

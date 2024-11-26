@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id        String   @default(cuid()) //默认生成的id
+  id        String   @id @default(cuid()) //默认生成的id
   username  String   @unique
   // email     String   @unique @default("")
   password  String
@@ -28,7 +28,7 @@ model Session {
   updatedAt DateTime @updatedAt
 }
 model Project {
-  id          String      @default(cuid()) //默认生成的id
+  id          String      @id @default(cuid()) //默认生成的id
   name        String      //项目名称
   code        String      @unique //项目编号
   category    String      // 项目分类
@@ -38,7 +38,7 @@ model Project {
 }
 
 model Equipment {
-  id          String        @default(cuid()) //默认生成的id
+  id          String        @id @default(cuid()) //默认生成的id
   code        String        @unique //设备编号
   name        String        //设备名称
   type        String        //设备类型
@@ -50,7 +50,7 @@ model Equipment {
   updatedAt   DateTime      @updatedAt //更新时间
 }
 model Workstation {
-  id            String       @default(cuid()) //默认生成的id
+  id            String       @id @default(cuid()) //默认生成的id
   code          String       @unique//工位编号
   name          String      //工位名称
   type          String      //工位类型
@@ -65,7 +65,7 @@ model Workstation {
 }
 
 model Material {
-  id            String       @default(cuid())
+  id            String       @id @default(cuid())
   code          String       @unique// 物料编号
   name          String      // 物料名称
   requestNumber String      // 需求数量
