@@ -3,10 +3,14 @@ import React, { useState } from 'react'
 import { Form, Input, Button, message } from 'antd'
 import useStores from '@/stores'
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 const LoginPage: React.FC = () => {
   const { user } = useStores()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get('redirect')
+
   return (
     <div className="h-screen flex justify-center items-center bg-gradient-to-r from-blue-200 to-blue-500">
       <div className="bg-white shadow-lg rounded-lg p-10 w-96">
@@ -21,9 +25,10 @@ const LoginPage: React.FC = () => {
               .login(values)
               .then((res) => {
                 if ((res as any).code == 200) {
-                  router.push('/home/erm')
-                  router.refresh()
                   setLoading(false)
+                  message.success('登录成功')
+
+                  router.push(redirect || '/home/erm')
                 }
               })
               .catch((err) => {

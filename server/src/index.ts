@@ -41,6 +41,7 @@ app.use(
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
     exposeHeaders: ['Content-Length', 'Date', 'X-Powered-By'],
+    credentials: true,
   })
 )
 app.use(bodyParser())

@@ -4,7 +4,7 @@ import { message } from 'antd'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: 'http://127.0.0.1:8000', // url = base url + request url
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   // timeout: 5000, // request timeout
   headers: { 'Content-Type': 'application/json;charset=UTF-8' },

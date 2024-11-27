@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import user from '@/api/user.api'
-import Cookies from 'js-cookie'
+
+import { setToken } from '@/utils/cookie'
 class User {
   userList: any[] = []
   user: any = null
@@ -17,7 +18,7 @@ class User {
         if ((res as any).data.token) {
           localStorage.setItem('token', (res as any).data.token)
           //存入cookie
-          Cookies.set('token', (res as any).data.token)
+          setToken((res as any).data.token)
           this.getUserInfo()
         }
       }
@@ -25,9 +26,7 @@ class User {
     })
   }
   async logout(userId: string) {
-    return user.logout(userId).then(() => {
-      // Cookies.set('token', '')
-    })
+    return user.logout(userId).then(() => {})
   }
 
   async getUserInfo() {

@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import type {
   ProjectType,
   EquipmentType,
@@ -66,7 +66,10 @@ class ErmData {
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
-    this.getErmData(mockData)
+    // this.getErmData(mockData)
+  }
+  uploadExcel(files: any) {
+    return DataFilterApi.uploadExcel(files)
   }
   getErmData(data: ProjectType[]) {
     this.ermData = data
@@ -92,9 +95,11 @@ class ErmData {
       this.selectedMaterial = this.selectedWorkstation?.materials[materialIndex]
     }
   }
-  getRemoteData() {
-    DataFilterApi.getData().then((res) => {
-      console.log(res)
+  async getRemoteData() {
+    return DataFilterApi.getData().then((res) => {
+      runInAction(() => {
+        this.ermData = res.data as ProjectType[]
+      })
     })
   }
   get randerEquipmentData() {

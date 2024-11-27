@@ -3,7 +3,10 @@ import UserService from '../service/user.service' // 引入 UserService
 import * as bcrypt from 'bcrypt'
 import { CustomError } from 'src/error'
 export const auth = async (ctx: Context) => {
-  return 'success'
+  if (ctx.state.user) {
+    return 'success'
+  }
+  throw new CustomError(201, '用户未登录')
 }
 export const login = async (ctx: Context) => {
   const { username, password } = ctx.request.body as {

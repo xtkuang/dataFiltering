@@ -32,7 +32,7 @@ model Project {
   name        String      //项目名称
   code        String      @unique //项目编号
   category    String      // 项目分类
-  equipment   Equipment[] // 关联的设备
+  equipments   Equipment[] // 关联的设备
   createdAt   DateTime    @default(now()) //默认生成时间
   updatedAt   DateTime    @updatedAt //更新时间
 }
@@ -44,7 +44,7 @@ model Equipment {
   type        String        //设备类型
   project     Project       @relation(fields: [projectId], references: [code]) //关联的项目
   projectId   String        //项目id
-  workstation Workstation[]   // 关联的工位
+  workstations Workstation[]   // 关联的工位
   workstationCode String      //工位code
   createdAt   DateTime      @default(now()) //默认生成时间
   updatedAt   DateTime      @updatedAt //更新时间
@@ -57,7 +57,7 @@ model Workstation {
   designHours   Int         // 设计工时
   electHours    Int         // 电气工时
   assemblyHours Int         // 装配工时
-  equipments    Equipment @relation(fields: [equipmentCode], references: [code]) // 关联的设备
+  equipment    Equipment @relation(fields: [equipmentCode], references: [code]) // 关联的设备
   equipmentCode String      //设备编号
   materials     Material[]  // 关联的物料
   createdAt     DateTime    @default(now()) //默认生成时间

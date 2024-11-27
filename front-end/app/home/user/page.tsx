@@ -23,6 +23,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
+import { removeToken } from '@/utils/cookie'
 export default observer(function Home() {
   const { user } = useStores()
   const userList = user.userList
@@ -147,8 +148,12 @@ export default observer(function Home() {
                 setLoading(true)
                 user.logout(record.id).then(() => {
                   setLoading(false)
+                  if (record.username === user.user?.username) {
+                    removeToken()
+                    localStorage.removeItem('token')
+                    router.push('/login')
+                  }
                   message.success(`${record.username}登出成功`)
-                  router.refresh()
                 })
               },
               onCancel() {

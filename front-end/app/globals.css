@@ -13,6 +13,8 @@ body {
 }
 .ant-table {
   min-height: calc(var(--Content-height) / 2.1) !important;
+  max-height: calc(var(--Content-height) / 2.1 - 20px) !important;
+  overflow: auto !important;
 }
 .ant-empty-normal {
   margin: calc(var(--Content-height) / 6.7) 0 !important;

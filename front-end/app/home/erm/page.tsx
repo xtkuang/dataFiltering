@@ -16,6 +16,7 @@ import { SearchOutlined, UploadOutlined } from '@ant-design/icons'
 import type { InputRef, TableColumnType, TableProps, UploadProps } from 'antd'
 import Highlighter from 'react-highlight-words'
 import useStores from '@/stores'
+import Cookies from 'js-cookie'
 import {
   DataType,
   ProjectType,
@@ -26,10 +27,13 @@ import {
 import { useEffect, useRef } from 'react'
 import { useState } from 'react'
 import { FilterDropdownProps } from 'antd/es/table/interface'
+import { getToken } from '@/utils/cookie'
 const { Search } = Input
 export default observer(function Home() {
   useEffect(() => {
-    // ermData.getRemoteData()
+    ermData.getRemoteData().then((res) => {
+      // ermData.ermData = res as any as ProjectType[]
+    })
   }, [])
   const { ermData } = useStores()
   const projectColumns = [
@@ -53,15 +57,15 @@ export default observer(function Home() {
   ]
 
   const materialColumns = [
-    { title: '物料分类', dataIndex: 'category' },
-    { title: '物料编号', dataIndex: 'code' },
-    { title: '物料名称', dataIndex: 'name' },
-    { title: '型号/图号', dataIndex: 'modelNumber' },
-    { title: '需求数量', dataIndex: 'requestNumber' },
-    { title: '品牌', dataIndex: 'brand' },
-    { title: '最低价', dataIndex: 'lowestPrice' },
-    { title: '最高价', dataIndex: 'highestPrice' },
-    { title: '均价', dataIndex: 'averagePrice' },
+    { title: '物料分类', dataIndex: 'category', align: 'center' },
+    { title: '物料编号', dataIndex: 'code', align: 'center' },
+    { title: '物料名称', dataIndex: 'name', align: 'center' },
+    { title: '型号/图号', dataIndex: 'modelNumber', align: 'center' },
+    { title: '需求数量', dataIndex: 'requestNumber', align: 'center' },
+    { title: '品牌', dataIndex: 'brand', align: 'center' },
+    { title: '最低价', dataIndex: 'lowestPrice', align: 'center' },
+    { title: '最高价', dataIndex: 'highestPrice', align: 'center' },
+    { title: '均价', dataIndex: 'averagePrice', align: 'center' },
   ]
   return (
     <>
@@ -274,14 +278,25 @@ function ErmTable({
   //   })
   // }
   // addEllipsis(columns)
+  const [tableHeight, setTableHeight] = useState(500)
+  const tableRef = useRef(null)
+  useEffect(() => {
+    if (tableRef.current) {
+      const header = tableRef.current
+      console.log(header)
+      // setTableHeight(window.innerHeight - (tableRef.current as HTMLElement).offsetTop - 100)
+    }
+  }, [window.innerHeight])
   return (
     <Table
+      ref={tableRef}
       rowSelection={{ ...rowSelection }}
       size="small"
       pagination={false}
       style={{ width: '100%' }}
       dataSource={dataSource}
       columns={columns}
+      sticky={true}
       rowKey={(record) => record.id}
       onRow={(record, index) => {
         return {
@@ -294,9 +309,16 @@ function ErmTable({
 }
 const props: UploadProps = {
   name: 'file',
-  action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
+  method: 'post',
+  // data: (file) => {
+  //   return {
+  //     file,
+  //   }
+  // },
+  withCredentials: true,
+  action: process.env.NEXT_PUBLIC_BASE_URL + '/upload',
   headers: {
-    authorization: 'authorization-text',
+    authorization: 'Bearer ' + getToken(),
   },
   accept: '.xlsx,.xls',
   onChange(info) {
@@ -311,11 +333,13 @@ const props: UploadProps = {
   },
 }
 
-const UploadButton: React.FC = () => (
-  <Upload {...props}>
-    <Button icon={<UploadOutlined />}>导入Excel</Button>
-  </Upload>
-)
+const UploadButton: React.FC = () => {
+  return (
+    <Upload {...props}>
+      <Button icon={<UploadOutlined />}>导入Excel</Button>
+    </Upload>
+  )
+}
 const ExportButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showExcel, setShowExcel] = useState(false)

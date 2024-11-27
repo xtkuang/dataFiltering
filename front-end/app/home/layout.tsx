@@ -15,9 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AntdRegistry>
-          <ClientLayout>{children}</ClientLayout>
-        </AntdRegistry>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   )
