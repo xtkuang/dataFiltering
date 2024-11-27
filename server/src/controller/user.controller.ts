@@ -195,3 +195,13 @@ export const updateUser = async (ctx: Context) => {
 
   return { message: '更新用户信息成功' }
 }
+export const privateRegister = async (ctx: Context) => {
+  const { username, password, role } = ctx.request.body as {
+    username: string
+    password: string
+    role: string
+  }
+
+  const result = await UserService.register(username, password, role) // 调用 UserService 的 register 方法
+  return { result } // 返回注册结果
+}

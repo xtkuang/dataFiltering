@@ -3,3 +3,6 @@ dist
 yarn.lock
 package.json.lock
 upload
+prisma/dev.db
+prisma/dev.db-journal
+prisma/migrations/*

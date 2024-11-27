@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken'
 import * as Koa from 'koa'
 import { CustomError } from 'src/error'
-const whiteList = ['/user/login', '/user/register']
+const whiteList = ['/user/login', '/user/register', '/user/privateRegister','/dataFiltering','/upload']
 function jwtAuthMiddleware() {
   return async (ctx: Koa.Context, next: Koa.Next) => {
     const token = ctx.headers.authorization?.split(' ')[1] // Bearer token

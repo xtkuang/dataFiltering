@@ -7,6 +7,7 @@ import routesAction from './routes'
 import prisma from './prisma'
 import type { PrismaClient } from '@prisma/client'
 import koaBody from 'koa-body'
+import * as koaMulter from 'koa-multer'
 import * as filepath from 'path'
 // import middlewareList from './middleware'
 import jwtAuthMiddleware from './middleware/jwtAuth'
@@ -28,7 +29,6 @@ app.context.destructionTime = 1 * 60 * 60 * 1000 // 1d
 app.use(
   koaBody({
     multipart: true,
-    //formData: true,
     formidable: {
       uploadDir: filepath.join(__dirname, '../upload'),
       keepExtensions: true,
@@ -39,9 +39,13 @@ app.use(
   cors({
     origin: '*',
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    exposeHeaders: ['Content-Length', 'Date', 'X-Powered-By'],
-    credentials: true,
+    allowHeaders: '*',
+    exposeHeaders: [
+      'Content-Length',
+      'Date',
+      'X-Powered-By',
+      'Content-Disposition',
+    ],
   })
 )
 app.use(bodyParser())
