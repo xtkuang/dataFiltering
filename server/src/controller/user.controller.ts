@@ -2,6 +2,7 @@ import { Context } from 'koa'
 import UserService from '../service/user.service' // 引入 UserService
 import * as bcrypt from 'bcrypt'
 import { CustomError } from 'src/error'
+import userService from '../service/user.service'
 export const auth = async (ctx: Context) => {
   if (ctx.state.user) {
     return 'success'
@@ -14,7 +15,7 @@ export const login = async (ctx: Context) => {
     password: string
   }
   const result = await UserService.login(username, password)
-  //存在则更新，不存在则创建
+
   const session = await ctx.prisma.session.findUnique({
     where: {
       userId: result.id,
@@ -205,3 +206,5 @@ export const privateRegister = async (ctx: Context) => {
   const result = await UserService.register(username, password, role) // 调用 UserService 的 register 方法
   return { result } // 返回注册结果
 }
+
+// userService.register('superAdmin', '123456', 'admin')

@@ -59,6 +59,27 @@ const mockData: ProjectType[] = [
 
 class ErmData {
   ermData: ProjectType[] = []
+  projectClassList: string[] = [
+    '泵',
+    '阀',
+    '换热器',
+    '电机',
+    '汽车组件',
+    '医疗',
+    '检测',
+    '家具',
+    '厨房',
+    '卫浴',
+    '改造搬迁',
+    '军工重工',
+    '其他',
+  ]
+  martialClassList: string[] = [
+    '机加工件',
+    '钣金件',
+    '机械标准件',
+    '电气标准件',
+  ]
   selectedProject: ProjectType | null = null
   selectedEquipment: EquipmentType | null = null
   selectedWorkstation: WorkstationType | null = null
@@ -66,7 +87,25 @@ class ErmData {
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
+    this.getRemoteData()
     // this.getErmData(mockData)
+  }
+  getDataType(
+    data: ProjectType | EquipmentType | WorkstationType | MaterialType
+  ) {
+    if (!data) {
+      return null
+    }
+    if ('equipments' in data) {
+      return 'project'
+    }
+    if ('workstations' in data) {
+      return 'equipment'
+    }
+    if ('materials' in data) {
+      return 'workstation'
+    }
+    return 'material'
   }
   uploadExcel(files: any) {
     return DataFilterApi.uploadExcel(files)

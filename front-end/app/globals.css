@@ -17,5 +17,8 @@ body {
   overflow: auto !important;
 }
 .ant-empty-normal {
-  margin: calc(var(--Content-height) / 6.7) 0 !important;
+  margin: calc(var(--Content-height) / 6.8) 0 !important;
+}
+.ant-table-wrapper .ant-table.ant-table-small {
+  font-size: 0.8em !important;
 }

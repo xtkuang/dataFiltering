@@ -1,14 +1,13 @@
 'use client'
 import {
   Table,
-  Row,
-  Col,
   Button,
   Upload,
   message,
   Space,
   Input,
   Modal,
+  Tooltip,
 } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { observer } from 'mobx-react'
@@ -16,7 +15,7 @@ import { SearchOutlined, UploadOutlined } from '@ant-design/icons'
 import type { InputRef, TableColumnType, TableProps, UploadProps } from 'antd'
 import Highlighter from 'react-highlight-words'
 import useStores from '@/stores'
-import Cookies from 'js-cookie'
+
 import {
   DataType,
   ProjectType,
@@ -30,13 +29,24 @@ import { FilterDropdownProps } from 'antd/es/table/interface'
 import { getToken } from '@/utils/cookie'
 const { Search } = Input
 export default observer(function Home() {
-  useEffect(() => {
-    ermData.getRemoteData().then((res) => {
-      // ermData.ermData = res as any as ProjectType[]
-    })
-  }, [])
+  // useEffect(() => {
+  //   ermData.getRemoteData().then((res) => {
+  //     // ermData.ermData = res as any as ProjectType[]
+  //   })
+  // }, [])
   const { ermData } = useStores()
   const projectColumns = [
+    {
+      title: '项目分类',
+      dataIndex: 'category',
+      filters: ermData.projectClassList.map((item) => ({
+        text: item,
+        value: item,
+      })),
+      onFilter: (value: string, record: ProjectType) =>
+        record.category.includes(value),
+      align: 'center',
+    },
     { title: '项目编号', dataIndex: 'code' },
     { title: '项目名称', dataIndex: 'name' },
   ]
@@ -48,7 +58,7 @@ export default observer(function Home() {
   ]
 
   const workstationColumns = [
-    { title: '工位编号', dataIndex: 'id' },
+    { title: '工位编号', dataIndex: 'code' },
     { title: '工位名称', dataIndex: 'name' },
     { title: '工位属性', dataIndex: 'type' },
     { title: '设计工时', dataIndex: 'designHours' },
@@ -57,7 +67,18 @@ export default observer(function Home() {
   ]
 
   const materialColumns = [
-    { title: '物料分类', dataIndex: 'category', align: 'center' },
+    {
+      title: '物料分类',
+      dataIndex: 'category',
+
+      filters: ermData.martialClassList.map((item) => ({
+        text: item,
+        value: item,
+      })),
+      onFilter: (value: string, record: MaterialType) =>
+        record.category.includes(value),
+      align: 'center',
+    },
     { title: '物料编号', dataIndex: 'code', align: 'center' },
     { title: '物料名称', dataIndex: 'name', align: 'center' },
     { title: '型号/图号', dataIndex: 'modelNumber', align: 'center' },
@@ -81,8 +102,8 @@ export default observer(function Home() {
             style={{ width: 200 }}
           />
         </div>
-        <div className="basis-5/12 flex flex-row gap-4">
-          <div className="basis-3/12">
+        <div className="basis-5/12 flex flex-row gap-4 w-full">
+          <div className="w-1/4 flex-initial shadow-md">
             <ErmTable
               columns={projectColumns}
               dataSource={ermData.randerProjects}
@@ -91,7 +112,7 @@ export default observer(function Home() {
               }}
             />
           </div>
-          <div className="basis-3/12">
+          <div className="w-1/4 flex-initial shadow-md">
             <ErmTable
               columns={equipmentColumns}
               dataSource={ermData.randerEquipmentData}
@@ -100,8 +121,9 @@ export default observer(function Home() {
               }}
             />
           </div>
-          <div className="basis-6/12">
+          <div className="w-1/2 flex-initial shadow-md">
             <ErmTable
+              // className="basis-6/12"
               columns={workstationColumns}
               dataSource={ermData.randerWorkstationData}
               callBack={(index) => {
@@ -110,7 +132,7 @@ export default observer(function Home() {
             />
           </div>
         </div>
-        <div className="basis-5/12">
+        <div className="basis-5/12 flex-initial shadow-md">
           <ErmTable
             columns={materialColumns}
             dataSource={ermData.randerMaterialData}
@@ -127,14 +149,18 @@ function ErmTable({
   columns,
   dataSource,
   callBack,
+  className,
 }: {
   columns: ColumnsType<DataType>
   dataSource: DataType[] | undefined
   callBack: (index: number) => void
+  className?: string
 }) {
   const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchedColumn] = useState('')
   const searchInput = useRef<InputRef>(null)
+  const { ermData } = useStores()
+  const dataType = ermData.getDataType(dataSource?.[0] as DataType)
   const [select, setSelect] = useState([])
   type DataIndex =
     | keyof ProjectType
@@ -264,33 +290,27 @@ function ErmTable({
       return {
         ...column,
         // ...getColumnSearchProps(column.dataIndex as DataIndex),
-        ellipsis: true,
+        ellipsis: {
+          showTitle: false,
+        },
+
+        render: (value) => (
+          <Tooltip placement="topLeft" title={value}>
+            {value}
+          </Tooltip>
+        ),
       }
     }
     return column
   })
-  // const addEllipsis = (columns: ColumnsType<DataType>) => {
-  //   return columns.map((col) => {
-  //     return {
-  //       ...col,
-  //       ellipsis: true,
-  //     }
-  //   })
-  // }
-  // addEllipsis(columns)
-  const [tableHeight, setTableHeight] = useState(500)
+
   const tableRef = useRef(null)
-  useEffect(() => {
-    if (tableRef.current) {
-      const header = tableRef.current
-      console.log(header)
-      // setTableHeight(window.innerHeight - (tableRef.current as HTMLElement).offsetTop - 100)
-    }
-  }, [window.innerHeight])
+
   return (
     <Table
+      className={className}
       ref={tableRef}
-      rowSelection={{ ...rowSelection }}
+      rowSelection={dataType == 'project' ? { ...rowSelection } : undefined}
       size="small"
       pagination={false}
       style={{ width: '100%' }}
@@ -315,7 +335,7 @@ const props: UploadProps = {
   //     file,
   //   }
   // },
-  withCredentials: true,
+  // withCredentials: true,
   action: process.env.NEXT_PUBLIC_BASE_URL + '/upload',
   headers: {
     authorization: 'Bearer ' + getToken(),
@@ -367,6 +387,7 @@ const ExportButton: React.FC = () => {
     { title: '物料名称', dataIndex: 'materialName' },
     { title: '需求数量', dataIndex: 'requestNumber' },
   ]
+
   return (
     <>
       <Button onClick={showModal}>导出Excel</Button>

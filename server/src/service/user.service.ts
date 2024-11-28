@@ -3,7 +3,7 @@ import * as jwt from 'jsonwebtoken'
 import type { JwtUserProps } from '../types'
 import { CustomError } from 'src/error'
 import * as bcrypt from 'bcrypt'
-import { register } from 'module'
+
 class UserService {
   async createToken(user: JwtUserProps) {
     const { username, id, role } = user

@@ -7,12 +7,11 @@ import routesAction from './routes'
 import prisma from './prisma'
 import type { PrismaClient } from '@prisma/client'
 import koaBody from 'koa-body'
-import * as koaMulter from 'koa-multer'
 import * as filepath from 'path'
 // import middlewareList from './middleware'
 import jwtAuthMiddleware from './middleware/jwtAuth'
 import globalResponseHandler from './middleware/globalResponse'
-import authMiddleware from './middleware/auth'
+// import authMiddleware from './middleware/auth'
 declare module 'koa' {
   interface Context {
     prisma: PrismaClient
@@ -39,13 +38,14 @@ app.use(
   cors({
     origin: '*',
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: '*',
+    allowHeaders: ['*'],
     exposeHeaders: [
       'Content-Length',
       'Date',
       'X-Powered-By',
       'Content-Disposition',
     ],
+    credentials: true,
   })
 )
 app.use(bodyParser())
