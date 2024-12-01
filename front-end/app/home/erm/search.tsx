@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Select, Spin, Input, Tooltip } from 'antd'
+import React, { useState } from 'react'
+import { Select, Input } from 'antd'
 import type { SelectProps } from 'antd'
-import debounce from 'lodash/debounce'
+
 import useStores from '@/stores'
-import { exportDataToExcel } from '../../../../server/src/controller/home-controller'
+
 import { observer } from 'mobx-react'
 import { toJS } from 'mobx'
 const { Search } = Input
@@ -13,89 +13,11 @@ export interface DebounceSelectProps<ValueType = any>
   debounceTimeout?: number
 }
 
-function DebounceSelect<
-  ValueType extends {
-    key?: string
-    label: React.ReactNode
-    value: string | number
-  } = any
->({
-  fetchOptions,
-  debounceTimeout = 800,
-  ...props
-}: DebounceSelectProps<ValueType>) {
-  const [fetching, setFetching] = useState(false)
-  const [options, setOptions] = useState<ValueType[]>([])
-  const fetchRef = useRef(0)
-
-  const debounceFetcher = useMemo(() => {
-    const loadOptions = (value: string) => {
-      fetchRef.current += 1
-      const fetchId = fetchRef.current
-      setOptions([])
-      setFetching(true)
-
-      fetchOptions(value).then((newOptions) => {
-        if (fetchId !== fetchRef.current) {
-          // for fetch callback order
-          return
-        }
-
-        setOptions(newOptions)
-        setFetching(false)
-      })
-    }
-
-    return debounce(loadOptions, debounceTimeout)
-  }, [fetchOptions, debounceTimeout])
-
-  return (
-    <>
-      <Search placeholder="input search text" onSearch={debounceFetcher} />
-      <Select
-        labelInValue
-        filterOption={false}
-        onSearch={debounceFetcher}
-        notFoundContent={fetching ? <Spin size="small" /> : null}
-        {...props}
-        options={options}
-        style={{ position: 'absolute', right: '0', width: '0' }}
-      />
-    </>
-  )
-}
-
-// Usage of DebounceSelect
-interface UserValue {
-  label: string
-  value: string
-}
-
-async function fetchUserList(username: string): Promise<UserValue[]> {
-  console.log('fetching user', username)
-
-  return fetch('https://randomuser.me/api/?results=5')
-    .then((response) => response.json())
-    .then((body) =>
-      body.results.map(
-        (user: {
-          name: { first: string; last: string }
-          login: { username: string }
-        }) => ({
-          label: `${user.name.first} ${user.name.last}`,
-          value: user.login.username,
-        })
-      )
-    )
-}
-
 const App: React.FC = observer(() => {
   const { ermData } = useStores()
-  const [value, setValue] = useState<UserValue[]>([])
+
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
-  const [fetching, setFetching] = useState(false)
-  const [options, setOptions] = useState<any[]>([])
 
   return (
     <>

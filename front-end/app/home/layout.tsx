@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { AntdRegistry } from '@ant-design/nextjs-registry'
+
 import ClientLayout from './layout.client'
 
 export const metadata: Metadata = {

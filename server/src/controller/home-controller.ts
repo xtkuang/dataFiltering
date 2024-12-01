@@ -4,7 +4,7 @@
 import { Context } from 'koa'
 import homeService from '../service/home-service'
 import dataFilteringService from '../service/dataFiltering.service'
-
+import 'koa-body'
 /**
  * 返回hello world
  * @param ctx

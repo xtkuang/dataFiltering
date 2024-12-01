@@ -1,14 +1,10 @@
 'use client'
 import React from 'react'
-import {
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from '@ant-design/icons'
-import { Avatar, Layout, Menu, theme } from 'antd'
+import { UserOutlined } from '@ant-design/icons'
+import { Layout, Menu, theme } from 'antd'
 import { ConfigProvider } from 'antd'
-const { Header, Content, Footer, Sider } = Layout
-import { LogoutOutlined, FileSearchOutlined } from '@ant-design/icons'
+const { Content, Sider } = Layout
+import { FileSearchOutlined } from '@ant-design/icons'
 import useStores from '@/stores'
 import { useRouter } from 'next/navigation'
 
@@ -39,38 +35,32 @@ const App: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken()
   const router = useRouter()
-  const { user } = useStores()
+
   return (
-    <ConfigProvider
-      theme={
-        {
-          // token: { colorBgLayout: '#fff', colorBgContainer: '#fff' },
-        }
-      }>
-      <Layout className="h-screen">
-        <Sider
-          theme="light"
-          collapsible
-          breakpoint="lg"
-          // collapsedWidth="0"
-          onBreakpoint={(broken) => {
-            console.log(broken)
+    <Layout className="h-screen">
+      <Sider
+        theme="light"
+        collapsible
+        breakpoint="lg"
+        // collapsedWidth="0"
+        onBreakpoint={(broken) => {
+          console.log(broken)
+        }}
+        onCollapse={(collapsed, type) => {
+          console.log(collapsed, type)
+        }}>
+        <div className="demo-logo-vertical" />
+        <Menu
+          // theme="light"
+          mode="inline"
+          items={items}
+          onClick={(e) => {
+            router.push(e.key)
           }}
-          onCollapse={(collapsed, type) => {
-            console.log(collapsed, type)
-          }}>
-          <div className="demo-logo-vertical" />
-          <Menu
-            // theme="light"
-            mode="inline"
-            items={items}
-            onClick={(e) => {
-              router.push(e.key)
-            }}
-          />
-        </Sider>
-        <Layout style={{ padding: '' }}>
-          {/* <Header
+        />
+      </Sider>
+      <Layout style={{ padding: '' }}>
+        {/* <Header
             style={{
               margin: '24px 16px 0',
               padding: 0,
@@ -91,22 +81,21 @@ const App: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               }}
             />
           </Header> */}
-          <Content style={{ margin: '24px 24px 0' }}>
-            <div
-              style={{
-                height: '100%',
-                // background: colorBgContainer,
-                borderRadius: borderRadiusLG,
-              }}>
-              {children}
-            </div>
-          </Content>
-          {/* <Footer style={{ textAlign: 'center' }}>
+        <Content style={{ margin: '24px 24px 0' }}>
+          <div
+            style={{
+              height: '100%',
+              // background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}>
+            {children}
+          </div>
+        </Content>
+        {/* <Footer style={{ textAlign: 'center' }}>
             Ant Design ©{new Date().getFullYear()} Created by Ant UED
           </Footer> */}
-        </Layout>
       </Layout>
-    </ConfigProvider>
+    </Layout>
   )
 }
 
