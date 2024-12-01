@@ -4,7 +4,9 @@ import {
   getPersonInfo,
   postTest,
   uploadFile,
-  getData
+  getData,
+  searchText,
+  exportDataToExcel,
 } from './controller/home-controller'
 import {
   getUser,
@@ -17,11 +19,12 @@ import {
   updatePassword,
   resetPassword,
   updateUser,
-  privateRegister
+  privateRegister,
 } from './controller/user.controller'
 import FileUploadService from './service/fileUpload.service'
-import { Context } from 'koa'
+
 import dataFiltering from './service/dataFiltering.service'
+
 export default [
   { path: '/', type: 'get', action: hello },
   { path: '/person/:name', type: 'get', action: helloName },
@@ -40,4 +43,7 @@ export default [
   { path: '/user/resetPassword', type: 'post', action: resetPassword },
   { path: '/user/update', type: 'post', action: updateUser },
   { path: '/user/privateRegister', type: 'post', action: privateRegister },
+  { path: '/erm/search', type: 'get', action: searchText },
+  { path: '/erm/reset', type: 'post', action: dataFiltering.resetTable },
+  { path: '/erm/export', type: 'get', action: exportDataToExcel },
 ]

@@ -12,6 +12,7 @@ interface ProjectType {
 // 定义设备数据结构
 interface EquipmentType {
   id: string // 设备唯一标识符
+  code: string // 设备编号
   name: string // 设备名称
   type: string // 设备类型
   projectId: string // 关联的项目ID
@@ -23,6 +24,7 @@ interface EquipmentType {
 // 定义工位数据结构
 interface WorkstationType {
   id: string // 工位唯一标识符
+  code: string // 工位编号
   name: string // 工位名称
   type: string // 工位类型
   designHours: number // 设计工时

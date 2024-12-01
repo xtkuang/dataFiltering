@@ -8,6 +8,7 @@ import {
   Input,
   Modal,
   Tooltip,
+  Cascader,
 } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { observer } from 'mobx-react'
@@ -27,7 +28,7 @@ import { useEffect, useRef } from 'react'
 import { useState } from 'react'
 import { FilterDropdownProps } from 'antd/es/table/interface'
 import { getToken } from '@/utils/cookie'
-const { Search } = Input
+import Search from './search'
 export default observer(function Home() {
   // useEffect(() => {
   //   ermData.getRemoteData().then((res) => {
@@ -94,17 +95,9 @@ export default observer(function Home() {
         <div className="basis-1/12 flex gap-4">
           <UploadButton />
           <ExportButton></ExportButton>
-          <Search
-            placeholder="input search text"
-            onChange={(e) => {
-              //防抖处理
-              const value = e.target.value
-            }}
-            onSearch={(value, e, info) => {
-              console.log(info?.source, value)
-            }}
-            style={{ width: 200 }}
-          />
+          <div className="w-1/2 relative ">
+            <Search />
+          </div>
         </div>
         <div className="basis-5/12 flex flex-row gap-4 w-full">
           <div className="w-1/4 flex-initial shadow-md">
@@ -186,20 +179,17 @@ function ErmTable({
     setSearchText('')
   }
   const rowSelection: TableProps<DataType>['rowSelection'] = {
-    // onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-    //   console.log(
-    //     `selectedRowKeys: ${selectedRowKeys}`,
-    //     'selectedRows: ',
-    //     selectedRows
-    //   )
-    // },
-    onSelect: (selected, type, changeRows) => {
-      console.log('选中的行:', selected, type, changeRows)
+    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+      ermData.setExportProjectCode(selectedRowKeys as string[])
     },
-    getCheckboxProps: (record: DataType) => ({
-      disabled: record.name === 'Disabled User', // Column configuration not to be checked
-      name: record.name,
-    }),
+    // onSelect: (selected, type, changeRows) => {
+    //   console.log('选中的行:', selected, type, changeRows)
+    // },
+
+    // getCheckboxProps: (record: DataType) => ({
+    //   disabled: record.name === 'Disabled User', // Column configuration not to be checked
+    //   name: record.name,
+    // }),
   }
   const getColumnSearchProps = (
     dataIndex: DataIndex
@@ -365,6 +355,7 @@ const UploadButton: React.FC = () => {
   )
 }
 const ExportButton: React.FC = () => {
+  const { ermData } = useStores()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showExcel, setShowExcel] = useState(false)
   const showModal = () => {
@@ -380,17 +371,6 @@ const ExportButton: React.FC = () => {
   const handleCancel = () => {
     setIsModalOpen(false)
   }
-  const columns = [
-    { title: '项目编号', dataIndex: 'code' },
-    { title: '项目名称', dataIndex: 'name' },
-    { title: '设备编号', dataIndex: 'equipmentCode' },
-    { title: '设备名称', dataIndex: 'equipmentName' },
-    { title: '工位编号', dataIndex: 'workstationCode' },
-    { title: '工位名称', dataIndex: 'workstationName' },
-    { title: '物料编号', dataIndex: 'materialCode' },
-    { title: '物料名称', dataIndex: 'materialName' },
-    { title: '需求数量', dataIndex: 'requestNumber' },
-  ]
 
   return (
     <>
@@ -405,9 +385,29 @@ const ExportButton: React.FC = () => {
       <Modal
         title="导出确认"
         open={isModalOpen}
-        onOk={handleOk}
+        onOk={async () => {
+          const downloadUrl =
+            process.env.NEXT_PUBLIC_BASE_URL +
+            '/erm/export' +
+            '?projectCode=' +
+            ermData.exportProjectCode?.join(',') // 假设返回的数据中包含下载链接
+
+          const link = document.createElement('a')
+          link.href = downloadUrl
+          link.setAttribute('download', 'exported_data.xlsx') // 设置下载文件名
+          document.body.appendChild(link)
+          link.click() // 触发下载
+          link.remove() // 移除链接
+          handleOk()
+        }}
         onCancel={handleCancel}>
-        <p>确定要导出当前选中的数据吗?</p>
+        <p>确定要导出{ermData.exportProjectCode?.length ?? 0}个项目的数据吗?</p>
+        <p>
+          项目编号:{' '}
+          {ermData.exportProjectCode?.map((item) => (
+            <strong key={item}>{item},</strong>
+          ))}
+        </p>
       </Modal>
     </>
   )

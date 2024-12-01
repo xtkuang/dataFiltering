@@ -7,56 +7,6 @@ import type {
 } from './modules'
 import DataFilterApi from '@/api/dataFilter.api'
 
-const mockData: ProjectType[] = [
-  {
-    id: '1',
-    name: '项目A',
-    code: 'A001',
-    category: '类型1',
-    equipments: [
-      {
-        id: '1',
-        name: '设备A',
-        type: '类型A',
-        projectId: '1',
-        workstations: [
-          {
-            id: '1',
-            name: '工位A',
-            type: '类型1',
-            designHours: 10,
-            electHours: 5,
-            assemblyHours: 8,
-            equipmentId: '1',
-            materials: [
-              {
-                id: '1',
-                code: 'M001',
-                name: '物料A',
-                category: '分类1',
-                modelNumber: '型号A',
-                brand: '品牌A',
-                lowestPrice: 100,
-                highestPrice: 150,
-                averagePrice: 125,
-                workstationId: '1',
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-            ],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-]
-
 class ErmData {
   ermData: ProjectType[] = []
   projectClassList: string[] = [
@@ -84,14 +34,30 @@ class ErmData {
   selectedEquipment: EquipmentType | null = null
   selectedWorkstation: WorkstationType | null = null
   selectedMaterial: MaterialType | null = null
+  exportProjectCode: string[] | null = null
+  searchData: any[] = []
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
     this.getRemoteData()
     // this.getErmData(mockData)
   }
-  async searchText() {
-    return DataFilterApi.searchText()
+  async searchText(query: string) {
+    return DataFilterApi.searchText(query)
+  }
+  setExportProjectCode(code: string[]) {
+    this.exportProjectCode = code
+  }
+  async exportExcel() {
+    if (this.exportProjectCode) {
+      return DataFilterApi.exportExcel(this.exportProjectCode)
+    }
+  }
+  addSearchData(data: any) {
+    this.searchData.push(data)
+  }
+  resetSearchData() {
+    this.searchData = []
   }
   getDataType(
     data: ProjectType | EquipmentType | WorkstationType | MaterialType
@@ -119,11 +85,28 @@ class ErmData {
   }
   setSelectedProject(projectIndex: number) {
     this.selectedProject = this.ermData[projectIndex]
-    console.log(this.selectedProject)
   }
   setSelectedEquipment(equipmentIndex: number) {
     if (this.selectedProject) {
       this.selectedEquipment = this.selectedProject?.equipments[equipmentIndex]
+    }
+  }
+  setSelected(code: string) {
+    const codes = code.split('=')
+    console.log(codes)
+    const project = this.ermData.find((item) => item.code === codes[0])
+    if (project) {
+      this.selectedProject = project
+    }
+    const equipment = project?.equipments.find((item) => item.code === codes[1])
+    if (equipment) {
+      this.selectedEquipment = equipment
+    }
+    const workstation = equipment?.workstations.find(
+      (item) => item.code === codes[2]
+    )
+    if (workstation) {
+      this.selectedWorkstation = workstation
     }
   }
   setSelectedWorkstation(workstationIndex: number) {

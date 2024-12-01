@@ -7,5 +7,11 @@ class DataFilterApi {
   async uploadExcel(files: any) {
     return request.post('/upload', { files })
   }
+  async searchText(query: string) {
+    return request.get(`/erm/search?query=${query}`)
+  }
+  async exportExcel(code: string[]) {
+    return request.get(`/erm/export?projectCode=${code.join(',')}`)
+  }
 }
 export default new DataFilterApi()

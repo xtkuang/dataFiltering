@@ -37,7 +37,25 @@ export const getPersonInfo = async (ctx: Context) => {
   const res = await homeService.getPersonInfo(queryParams)
   ctx.body = res
 }
+export const searchText = async (ctx: Context) => {
+  const { query } = ctx.request.query
+  const res = await dataFilteringService.searchAllTables(query as string)
+  return res
+}
+export const exportDataToExcel = async (ctx: Context) => {
+  const { projectCode } = ctx.request.query as { projectCode: string }
+  const codes = projectCode?.split(',')
+  const buffer = await dataFilteringService.exportDataToExcel(codes)
 
+  const fileName = encodeURIComponent('导出数据.xlsx')
+  ctx.set('Content-Disposition', `attachment; filename=${fileName}`)
+  ctx.set(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  )
+  ctx.body = buffer // 将文件内容返回给用户
+  console.log('数据已成功导出到Excel文件并准备下载')
+}
 /**
  * 接收post请求，并获取参数
  * @param ctx

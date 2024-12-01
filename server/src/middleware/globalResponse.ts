@@ -7,10 +7,15 @@ export default function globalResponseHandler() {
     try {
       const data = await next()
 
-      ctx.response.body = {
-        code: 200,
-        data,
-        msg: 'success',
+      if (
+        ctx.response.header['content-type'] !==
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      ) {
+        ctx.response.body = {
+          code: 200,
+          data,
+          msg: 'success',
+        }
       }
     } catch (error) {
       let code = 400
