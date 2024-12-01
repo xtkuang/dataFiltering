@@ -21,7 +21,6 @@ import {
   updateUser,
   privateRegister,
 } from './controller/user.controller'
-import FileUploadService from './service/fileUpload.service'
 
 import dataFiltering from './service/dataFiltering.service'
 
