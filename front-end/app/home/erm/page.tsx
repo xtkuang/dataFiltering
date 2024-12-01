@@ -102,7 +102,7 @@ export default observer(function Home() {
         <div className="basis-5/12 flex flex-row gap-4 w-full">
           <div className="w-1/4 flex-initial shadow-md">
             <ErmTable
-              columns={projectColumns}
+              columns={projectColumns as ColumnsType<DataType>}
               dataSource={ermData.randerProjects}
               callBack={(index) => {
                 ermData.setSelectedProject(index)
@@ -131,7 +131,7 @@ export default observer(function Home() {
         </div>
         <div className="basis-5/12 flex-initial shadow-md">
           <ErmTable
-            columns={materialColumns}
+            columns={materialColumns as ColumnsType<DataType>}
             dataSource={ermData.randerMaterialData}
             callBack={(index) => {
               ermData.setSelectedMaterial(index)
