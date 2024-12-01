@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url = env("DATABASE_URL")
+  provider = "sqlite"
+  url = "file:./dev.db"
 }
 
 model User {
@@ -21,7 +21,7 @@ model User {
 }
 model Session {
   id        String   @id @default(cuid()) //默认生成的id
-  token     String   @unique @db.VarChar(512)
+  token     String   @unique 
   userId    String   @unique
   destruction DateTime 
   createdAt DateTime @default(now())

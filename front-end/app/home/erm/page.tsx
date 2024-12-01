@@ -96,6 +96,10 @@ export default observer(function Home() {
           <ExportButton></ExportButton>
           <Search
             placeholder="input search text"
+            onChange={(e) => {
+              //防抖处理
+              const value = e.target.value
+            }}
             onSearch={(value, e, info) => {
               console.log(info?.source, value)
             }}

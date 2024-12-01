@@ -277,6 +277,12 @@ class DataFilteringService {
     })
     return data
   }
+  async resetTable() {
+    await prisma.material.deleteMany()
+    await prisma.workstation.deleteMany()
+    await prisma.equipment.deleteMany()
+    await prisma.project.deleteMany()
+  }
 }
 
 export default new DataFilteringService()

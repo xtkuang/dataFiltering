@@ -90,6 +90,9 @@ class ErmData {
     this.getRemoteData()
     // this.getErmData(mockData)
   }
+  async searchText() {
+    return DataFilterApi.searchText()
+  }
   getDataType(
     data: ProjectType | EquipmentType | WorkstationType | MaterialType
   ) {
