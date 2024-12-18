@@ -412,19 +412,23 @@ class DataFilteringService {
     const workStationList: Workstation[] = []
     const materialList: Material[] = []
     for (const row of rows) {
-      const projectId = row[2]
-      const equipmentId = projectId + '=' + row[4]
-      const workStationId = projectId + '=' + row[4] + '=' + row[7]
-      const materialId = projectId + '=' + row[4] + '=' + row[7] + '=' + row[13]
+      if (!row[2] || !row[4] || !row[7] || !row[13]) {
+        console.log('数据缺失:', row);
+        continue;
+      }
+      const projectId = String(row[2])
+      const equipmentId = projectId + '=' + String(row[4])
+      const workStationId = projectId + '=' + String(row[4]) + '=' + String(row[7])
+      const materialId = projectId + '=' + String(row[4]) + '=' + String(row[7]) + '=' + String(row[13])
       if (
         !existedProject.some((project) => project.id === projectId) &&
         !projectList.some((project) => project.id === projectId)
       ) {
         projectList.push({
           id: projectId,
-          name: row[3] as string,
-          code: row[2] as string,
-          category: row[1] as string,
+          name: String(row[3]) || '',
+          code: String(row[2]) || '',
+          category: String(row[1]) || '',
           createdAt: new Date(),
           updatedAt: new Date(),
         })
@@ -435,9 +439,9 @@ class DataFilteringService {
       ) {
         equipmentList.push({
           id: equipmentId,
-          name: row[5] as string,
-          code: row[4] as string,
-          type: row[6] as string,
+          name: String(row[5]) || '',
+          code: String(row[4]) || '',
+          type: String(row[6]) || '',
           projectId: projectId,
 
           createdAt: new Date(),
@@ -452,9 +456,9 @@ class DataFilteringService {
       ) {
         workStationList.push({
           id: workStationId,
-          name: row[8] as string,
-          code: row[7] as string,
-          type: row[9] as string,
+          name: String(row[8]) || '',
+          code: String(row[7]) || '',
+          type: String(row[9]) || '',
           designHours: Number(row[10]) || 0,
           electHours: Number(row[11]) || 0,
           assemblyHours: Number(row[12]) || 0,
