@@ -195,6 +195,7 @@ class DataFilteringService {
       n++
       return data
     } catch (error) {
+      console.error(error)
       throw new CustomError(501, '数据解析失败')
     }
   } //数据解析服务
@@ -422,9 +423,9 @@ class DataFilteringService {
       ) {
         projectList.push({
           id: projectId,
-          name: row[3] as string,
-          code: row[2] as string,
-          category: row[1] as string,
+          name: String(row[3]) as string,
+          code: String(row[2]) as string,
+          category: String(row[1]) as string,
           createdAt: new Date(),
           updatedAt: new Date(),
         })
@@ -435,7 +436,7 @@ class DataFilteringService {
       ) {
         equipmentList.push({
           id: equipmentId,
-          name: row[5] as string,
+          name: String(row[5]) as string,
           code: row[4] as string,
           type: row[6] as string,
           projectId: projectId,

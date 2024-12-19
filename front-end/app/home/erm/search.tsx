@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Select, Input } from 'antd'
 import type { SelectProps } from 'antd'
 
@@ -6,19 +6,55 @@ import useStores from '@/stores'
 
 import { observer } from 'mobx-react'
 import { toJS } from 'mobx'
+// import { debounce } from 'lodash'
 const { Search } = Input
 export interface DebounceSelectProps<ValueType = any>
   extends Omit<SelectProps<ValueType | ValueType[]>, 'options' | 'children'> {
   fetchOptions: (search: string) => Promise<ValueType[]>
   debounceTimeout?: number
 }
+function debounce(handle: Function, delay: number) {
+  let timer: NodeJS.Timeout | null = null
 
+  return function (...args: any) {
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => {
+      handle(...args)
+      timer = null
+    }, delay)
+  }
+}
 const App: React.FC = observer(() => {
   const { ermData } = useStores()
-
+  const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
-
+  const debounceSearch = useCallback(
+    //在组件重新渲染时不会重新创建防抖函数。
+    debounce((value: string) => {
+      search(value)
+    }, 1000),
+    []
+  )
+  const search = async (value: string) => {
+    console.log('search:', value)
+    ermData.resetSearchData()
+    setSearchValue(value)
+    setLoading(true)
+    await ermData.searchText(value).then((res) => {
+      const data = res.data
+      for (const item in data) {
+        data[item].map((item: any) => {
+          ermData.addSearchData({
+            label: item.id + '|' + item.search,
+            value: item.id,
+          })
+        })
+      }
+      console.log(ermData.searchData)
+    })
+    setLoading(false)
+  }
   return (
     <>
       <Select
@@ -64,25 +100,17 @@ const App: React.FC = observer(() => {
         style={{ position: 'relative', zIndex: 10, width: '100%' }}
         placeholder="input search text"
         onFocus={() => setOpen(true)}
+        loading={loading}
         onBlur={() => setOpen(false)}
-        // loading={true}
-
+        onChange={async (e) => {
+          debounceSearch(e.target.value)
+          // debounce(() => {
+          //   console.log('debounce : ' + e.target.value)
+          //   // await search(e.target.value)
+          // }, 1000)()
+        }}
         onSearch={async (value) => {
-          ermData.resetSearchData()
-          setSearchValue(value)
-
-          await ermData.searchText(value).then((res) => {
-            const data = res.data
-            for (const item in data) {
-              data[item].map((item: any) => {
-                ermData.addSearchData({
-                  label: item.id + '|' + item.search,
-                  value: item.id,
-                })
-              })
-            }
-            console.log(ermData.searchData)
-          })
+          await search(value)
         }}
       />
     </>

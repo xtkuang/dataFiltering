@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import user from '@/api/user.api'
 
 import { setToken } from '@/utils/cookie'
@@ -8,6 +8,8 @@ class User {
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
+    this.getUserInfo()
+    this.getUserList()
   }
   register(data: any) {
     return user.register(data)
@@ -31,12 +33,16 @@ class User {
 
   async getUserInfo() {
     return user.getUserInfo().then((res) => {
-      this.user = res.data
+      runInAction(() => {
+        this.user = res.data
+      })
     })
   }
   async getUserList() {
     return user.getUserList().then((res) => {
-      this.userList = res.data.result
+      runInAction(() => {
+        this.userList = res.data.result
+      })
     })
   }
   async deleteUser(id: string) {

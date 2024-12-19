@@ -8,7 +8,6 @@ import {
   Input,
   Modal,
   Tooltip,
-  Cascader,
 } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { observer } from 'mobx-react'
@@ -321,32 +320,35 @@ function ErmTable({
     />
   )
 }
-const props: UploadProps = {
-  name: 'file',
-  method: 'post',
-  // data: (file) => {
-  //   return {
-  //     file,
-  //   }
-  // },
-  // withCredentials: true,
-  action: process.env.NEXT_PUBLIC_BASE_URL + '/upload',
-  headers: {
-    authorization: 'Bearer ' + getToken(),
-  },
-  accept: '.xlsx,.xls',
-  onChange(info) {
-    if (info.file.status !== 'uploading') {
-    }
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`)
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`)
-    }
-  },
-}
 
 const UploadButton: React.FC = () => {
+  const { ermData } = useStores()
+  const props: UploadProps = {
+    name: 'file',
+    method: 'post',
+    // data: (file) => {
+    //   return {
+    //     file,
+    //   }
+    // },
+    // withCredentials: true,
+    action: process.env.NEXT_PUBLIC_BASE_URL + '/upload',
+    headers: {
+      authorization: 'Bearer ' + getToken(),
+    },
+    accept: '.xlsx,.xls',
+    onChange(info) {
+      if (info.file.status !== 'uploading') {
+      }
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully`)
+        ermData.getRemoteData()
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`)
+      }
+    },
+  }
+
   return (
     <Upload {...props}>
       <Button icon={<UploadOutlined />}>导入Excel</Button>
