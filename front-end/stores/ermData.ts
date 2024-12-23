@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable, runInAction, toJS } from 'mobx'
 import type {
   ProjectType,
   EquipmentType,
@@ -34,24 +34,139 @@ class ErmData {
   selectedEquipment: EquipmentType | null = null
   selectedWorkstation: WorkstationType | null = null
   selectedMaterial: MaterialType | null = null
-  exportProjectCode: string[] | null = null
-  searchData: any[] = []
 
+  searchData: any[] = []
+  exportTree: any
+  exportArray: any[] = []
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
-    this.getRemoteData()
+    // this.getRemoteData()
     // this.getErmData(mockData)
   }
   async searchText(query: string) {
     return DataFilterApi.searchText(query)
   }
-  setExportProjectCode(code: string[]) {
-    this.exportProjectCode = code
+  initExportTree() {
+    this.exportTree = this.ermData.map((project) => ({
+      id: project.id,
+      code: project.code,
+      selected: false,
+      children: project.equipments.map((equipment) => ({
+        id: equipment.id,
+        code: equipment.code,
+        selected: false,
+        children: equipment.workstations.map((workstation) => ({
+          id: workstation.id,
+          code: workstation.code,
+          selected: false,
+          children: workstation.materials.map((material) => ({
+            id: material.id,
+            code: material.code,
+            selected: false,
+            children: [],
+          })),
+        })),
+      })),
+    }))
   }
-  async exportExcel() {
-    if (this.exportProjectCode) {
-      return DataFilterApi.exportExcel(this.exportProjectCode)
+  setExportTree(changedNodeList: string[], selected: boolean = true) {
+    // this.exportProjectCode = code
+    // this.exportArray = []
+    // console.log(selected)
+    for (const node of changedNodeList) {
+      const [projectCode, equipmentCode, workstationCode, materialCode] =
+        node.split('=')
+      console.log(projectCode, equipmentCode, workstationCode, materialCode)
+      if (!projectCode) {
+        continue
+      }
+      const project = this.exportTree.find(
+        (item: any) => item.code === projectCode
+      )
+      // console.log(project)
+      if (!equipmentCode) {
+        project.selected = selected
+        project.children.forEach((equipment: any) => {
+          equipment.selected = selected
+          equipment.children.forEach((workstation: any) => {
+            workstation.selected = selected
+            workstation.children.forEach((material: any) => {
+              material.selected = selected
+            })
+          })
+        })
+        continue
+      }
+      const equipment = project.children.find(
+        (item: any) => item.code === equipmentCode
+      )
+      if (!workstationCode) {
+        equipment.selected = selected
+        equipment.children.forEach((workstation: any) => {
+          workstation.selected = selected
+          workstation.children.forEach((material: any) => {
+            material.selected = selected
+          })
+        })
+        continue
+      }
+      const workstation = equipment.children.find(
+        (item: any) => item.code === workstationCode
+      )
+      if (!materialCode) {
+        workstation.selected = selected
+        workstation.children.forEach((material: any) => {
+          material.selected = selected
+        })
+        continue
+      }
+      const material = workstation.children.find(
+        (item: any) => item.code === materialCode
+      )
+      material.selected = selected
     }
+    console.log(this.exportTree)
+    const list = this.traverseExportTree(this.exportTree)
+    console.log(list)
+    this.exportArray = list
+  }
+  //遍历exportTree
+  traverseExportTree(tree: any) {
+    const selectedList: string[] = []
+    for (const item of tree) {
+      if (item.selected) {
+        selectedList.push(item.id)
+      }
+
+      // 递归遍历子节点
+      if (item.children) {
+        const list = this.traverseExportTree(item.children)
+        selectedList.push(...list)
+      }
+    }
+
+    return selectedList
+  }
+  // getExportArray(tree: any): string[] {
+  //   const selectedList: string[] = []
+  //   for (const item of tree) {
+  //     if (item.selected && item.children.length === 0) {
+  //       selectedList.push(item.id)
+  //     }
+
+  //     // 递归遍历子节点
+  //     if (item.children) {
+  //       const list = this.getExportArray(item.children)
+  //       selectedList.push(...list)
+  //     }
+  //   }
+  //   return selectedList
+  // }
+  async exportExcel() {
+    DataFilterApi.exportExcel(this.exportArray)
+    // if (this.exportProjectCode) {
+    //   return DataFilterApi.exportExcel(this.exportProjectCode)
+    // }
   }
   addSearchData(data: any) {
     this.searchData.push(data)
@@ -93,7 +208,7 @@ class ErmData {
   }
   setSelected(code: string) {
     const codes = code.split('=')
-    console.log(codes)
+
     const project = this.ermData.find((item) => item.code === codes[0])
     if (project) {
       this.selectedProject = project
@@ -107,6 +222,12 @@ class ErmData {
     )
     if (workstation) {
       this.selectedWorkstation = workstation
+    }
+    const material = workstation?.materials.find(
+      (item) => item.code === codes[3]
+    )
+    if (material) {
+      this.selectedMaterial = material
     }
   }
   setSelectedWorkstation(workstationIndex: number) {
@@ -124,6 +245,7 @@ class ErmData {
     return DataFilterApi.getData().then((res) => {
       runInAction(() => {
         this.ermData = res.data as ProjectType[]
+        this.initExportTree()
       })
     })
   }

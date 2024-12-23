@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
       },
     }).then((res) => res.json())
   } catch (error) {
-    console.log(error)
+    // console.log(error)
   }
 
   if (auth?.code !== 200) {

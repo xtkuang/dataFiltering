@@ -8,8 +8,8 @@ class User {
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true })
-    this.getUserInfo()
-    this.getUserList()
+    // this.getUserInfo()
+    // this.getUserList()
   }
   register(data: any) {
     return user.register(data)

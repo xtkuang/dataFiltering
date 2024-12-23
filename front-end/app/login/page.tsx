@@ -33,6 +33,7 @@ const LoginPage: React.FC = () => {
               })
               .catch((err) => {
                 message.error('用户名或密码错误')
+                console.log(err)
                 setLoading(false)
               })
           }}>

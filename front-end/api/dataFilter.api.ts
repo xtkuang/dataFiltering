@@ -10,8 +10,9 @@ class DataFilterApi {
   async searchText(query: string) {
     return request.get(`/erm/search?query=${query}`)
   }
-  async exportExcel(code: string[]) {
-    return request.get(`/erm/export?projectCode=${code.join(',')}`)
+  async exportExcel(exportArray: string[]) {
+    return request.post(`/erm/export`, { exportArray })
   }
 }
-export default new DataFilterApi()
+const dataFilterApi = new DataFilterApi()
+export default dataFilterApi

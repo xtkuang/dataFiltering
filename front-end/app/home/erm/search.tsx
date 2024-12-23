@@ -81,7 +81,11 @@ const App: React.FC = observer(() => {
             <div key={option.value + option.label}>
               <div dangerouslySetInnerHTML={{ __html: highlightedSearch }} />
               <div style={{ fontSize: '10px' }}>
-                {`项目:${project} 设备:${equipment} 工位:${workstation} 物料:${material} 中`}
+                {`${project ? `项目:${project} ` : ''} ${
+                  equipment ? `设备:${equipment} ` : ''
+                } ${workstation ? `工位:${workstation} ` : ''} ${
+                  material ? `物料:${material} ` : ''
+                }`}
               </div>
             </div>
           )
@@ -91,10 +95,9 @@ const App: React.FC = observer(() => {
         value={null}
         onSelect={(value: any) => {
           setOpen(false)
-
+          console.log(value)
           ermData.setSelected(value)
         }}
-        // ... 其他属性保持不变 ...
       />
       <Search
         style={{ position: 'relative', zIndex: 10, width: '100%' }}
@@ -104,10 +107,6 @@ const App: React.FC = observer(() => {
         onBlur={() => setOpen(false)}
         onChange={async (e) => {
           debounceSearch(e.target.value)
-          // debounce(() => {
-          //   console.log('debounce : ' + e.target.value)
-          //   // await search(e.target.value)
-          // }, 1000)()
         }}
         onSearch={async (value) => {
           await search(value)

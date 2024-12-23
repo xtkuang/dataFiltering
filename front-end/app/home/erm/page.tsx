@@ -34,7 +34,14 @@ export default observer(function Home() {
   //     // ermData.ermData = res as any as ProjectType[]
   //   })
   // }, [])
+  const [handleFetch, setHandleFetch] = useState(true)
   const { ermData } = useStores()
+  useEffect(() => {
+    if (handleFetch) {
+      ermData.getRemoteData()
+      setHandleFetch(false)
+    }
+  }, [])
   const projectColumns = [
     {
       title: '项目分类',
@@ -141,185 +148,218 @@ export default observer(function Home() {
     </>
   )
 })
-function ErmTable({
-  columns,
-  dataSource,
-  callBack,
-  className,
-}: {
-  columns: ColumnsType<DataType>
-  dataSource: DataType[] | undefined
-  callBack: (index: number) => void
-  className?: string
-}) {
-  const [searchText, setSearchText] = useState('')
-  const [searchedColumn, setSearchedColumn] = useState('')
-  const searchInput = useRef<InputRef>(null)
-  const { ermData } = useStores()
-  const dataType = ermData.getDataType(dataSource?.[0] as DataType)
-  const [select, setSelect] = useState([])
-  type DataIndex =
-    | keyof ProjectType
-    | keyof EquipmentType
-    | keyof WorkstationType
-    | keyof MaterialType
-  const handleSearch = (
-    selectedKeys: string[],
-    confirm: FilterDropdownProps['confirm'],
-    dataIndex: DataIndex
-  ) => {
-    confirm()
-    setSearchText(selectedKeys[0])
-    setSearchedColumn(dataIndex)
-  }
+const ErmTable = observer(
+  ({
+    columns,
+    dataSource,
+    callBack,
+    className,
+  }: {
+    columns: ColumnsType<DataType>
+    dataSource: DataType[] | undefined
+    callBack: (index: number) => void
+    className?: string
+  }) => {
+    const [searchText, setSearchText] = useState('')
+    const [searchedColumn, setSearchedColumn] = useState('')
+    const searchInput = useRef<InputRef>(null)
+    const { ermData } = useStores()
+    const dataType = ermData.getDataType(dataSource?.[0] as DataType)
+    const [select, setSelect] = useState<string[]>([])
+    const tableRef = useRef(null)
+    type DataIndex =
+      | keyof ProjectType
+      | keyof EquipmentType
+      | keyof WorkstationType
+      | keyof MaterialType
+    const handleSearch = (
+      selectedKeys: string[],
+      confirm: FilterDropdownProps['confirm'],
+      dataIndex: DataIndex
+    ) => {
+      confirm()
+      setSearchText(selectedKeys[0])
+      setSearchedColumn(dataIndex)
+    }
 
-  const handleReset = (clearFilters: () => void) => {
-    clearFilters()
-    setSearchText('')
-  }
-  const rowSelection: TableProps<DataType>['rowSelection'] = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-      ermData.setExportProjectCode(selectedRowKeys as string[])
-    },
-    // onSelect: (selected, type, changeRows) => {
-    //   console.log('选中的行:', selected, type, changeRows)
-    // },
+    const handleReset = (clearFilters: () => void) => {
+      clearFilters()
+      setSearchText('')
+    }
+    const rowSelection: TableProps<DataType>['rowSelection'] = {
+      onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+        // const row = ermData.setExportProjectCode(selectedRowKeys as string[])
+        // console.log(selectedRows)
+        setSelect([...selectedRowKeys, ''] as string[])
+      },
+      onSelectAll: (selected, selectedRows, changeRows) => {
+        // ermData.setExportTree(changeRows.map((item) => item.id), selected)
+        console.log(selected, selectedRows, changeRows)
+      },
+      onSelect: (changedRow, selected, selectedRows, nativeEvent) => {
+        ermData.setExportTree([changedRow.id], selected)
+      },
+      selectedRowKeys: ermData.exportArray,
+      // onSelect: (selected, type, changeRows) => {
+      //   console.log('选中的行:', selected, type, changeRows)
+      // },
 
-    // getCheckboxProps: (record: DataType) => ({
-    //   disabled: record.name === 'Disabled User', // Column configuration not to be checked
-    //   name: record.name,
-    // }),
-  }
-  const getColumnSearchProps = (
-    dataIndex: DataIndex
-  ): TableColumnType<DataType> => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-      close,
-    }) => (
-      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() =>
-            handleSearch(selectedKeys as string[], confirm, dataIndex)
-          }
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() =>
+      // getCheckboxProps: (record: DataType) => ({
+      //   disabled: record.name === 'Disabled User', // Column configuration not to be checked
+      //   name: record.name,
+      // }),
+    }
+    const getColumnSearchProps = (
+      dataIndex: DataIndex
+    ): TableColumnType<DataType> => ({
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+        close,
+      }) => (
+        <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+          <Input
+            ref={searchInput}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() =>
               handleSearch(selectedKeys as string[], confirm, dataIndex)
             }
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}>
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{ width: 90 }}>
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({ closeDropdown: false })
-              setSearchText((selectedKeys as string[])[0])
-              setSearchedColumn(dataIndex)
-            }}>
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close()
-            }}>
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex as keyof DataType]
-        .toString()
-        .toLowerCase()
-        .includes((value as string).toLowerCase()),
-    filterDropdownProps: {
-      onOpenChange(open) {
-        if (open) {
-          setTimeout(() => searchInput.current?.select(), 100)
-        }
-      },
-    },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
-      ) : (
-        text
+            style={{ marginBottom: 8, display: 'block' }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() =>
+                handleSearch(selectedKeys as string[], confirm, dataIndex)
+              }
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}>
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters)}
+              size="small"
+              style={{ width: 90 }}>
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({ closeDropdown: false })
+                setSearchText((selectedKeys as string[])[0])
+                setSearchedColumn(dataIndex)
+              }}>
+              Filter
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                close()
+              }}>
+              close
+            </Button>
+          </Space>
+        </div>
       ),
-  })
-  columns = columns.map((column) => {
-    if ('dataIndex' in column) {
-      return {
-        ...column,
-        // ...getColumnSearchProps(column.dataIndex as DataIndex),
-        ellipsis: {
-          showTitle: false,
+      filterIcon: (filtered: boolean) => (
+        <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
+      ),
+      onFilter: (value, record) =>
+        record[dataIndex as keyof DataType]
+          .toString()
+          .toLowerCase()
+          .includes((value as string).toLowerCase()),
+      filterDropdownProps: {
+        onOpenChange(open) {
+          if (open) {
+            setTimeout(() => searchInput.current?.select(), 100)
+          }
         },
-
-        render: (value) => (
-          <Tooltip placement="topLeft" title={value}>
-            {value}
-          </Tooltip>
+      },
+      render: (text) =>
+        searchedColumn === dataIndex ? (
+          <Highlighter
+            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+            searchWords={[searchText]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
         ),
-      }
-    }
-    return column
-  })
-
-  const tableRef = useRef(null)
-
-  return (
-    <Table
-      className={className}
-      ref={tableRef}
-      rowSelection={dataType == 'project' ? { ...rowSelection } : undefined}
-      size="small"
-      pagination={false}
-      style={{ width: '100%' }}
-      dataSource={dataSource}
-      columns={columns}
-      sticky={true}
-      rowKey={(record) => record.id}
-      onRow={(record, index) => {
+    })
+    columns = columns.map((column) => {
+      if ('dataIndex' in column) {
         return {
-          onClick: () => callBack(index ?? 0),
+          ...column,
+          // ...getColumnSearchProps(column.dataIndex as DataIndex),
+          ellipsis: {
+            showTitle: false,
+          },
+
+          render: (value) => (
+            <Tooltip placement="topLeft" title={value}>
+              {value}
+            </Tooltip>
+          ),
         }
-      }}
-      // scroll={{ y: 500 }}
-    />
-  )
-}
+      }
+      return column
+    })
+
+    return (
+      <Table
+        className={className}
+        ref={tableRef}
+        rowClassName={(value) => {
+          const id = value.id
+          const projectId = ermData.selectedProject?.id
+          const equipmentId = ermData.selectedEquipment?.id
+          const workstationId = ermData.selectedWorkstation?.id
+          const materialId = ermData.selectedMaterial?.id
+
+          if (
+            id === projectId ||
+            id === equipmentId ||
+            id === workstationId ||
+            id === materialId
+          ) {
+            return 'selected'
+          }
+
+          return value.id
+        }}
+        // rowSelection={dataType == 'project' ? { ...rowSelection } : undefined}
+        rowSelection={{ ...rowSelection }}
+        size="small"
+        pagination={false}
+        style={{ width: '100%' }}
+        dataSource={dataSource}
+        columns={columns}
+        sticky={true}
+        rowKey={(record) => record.id}
+        onRow={(record, index) => {
+          return {
+            onClick: () => {
+              callBack(index ?? 0)
+              console.log(record, index)
+            },
+          }
+        }}
+        // scroll={{ y: 500 }}
+      />
+    )
+  }
+)
 
 const UploadButton: React.FC = () => {
   const { ermData } = useStores()
@@ -387,28 +427,28 @@ const ExportButton: React.FC = () => {
         title="导出确认"
         open={isModalOpen}
         onOk={async () => {
-          const downloadUrl =
-            process.env.NEXT_PUBLIC_BASE_URL +
-            '/erm/export' +
-            '?projectCode=' +
-            ermData.exportProjectCode?.join(',') // 假设返回的数据中包含下载链接
+          // // const downloadUrl =
+          // //   process.env.NEXT_PUBLIC_BASE_URL +
+          // //   '/erm/export' +
+          // //   '?projectCode=' +
+          // //   ermData.exportArrayode?.join(',')
 
-          const link = document.createElement('a')
-          link.href = downloadUrl
-          link.setAttribute('download', 'exported_data.xlsx') // 设置下载文件名
-          document.body.appendChild(link)
-          link.click() // 触发下载
-          link.remove() // 移除链接
+          // const link = document.createElement('a')
+          // link.href = downloadUrl
+          // link.setAttribute('download', 'exported_data.xlsx') // 设置下载文件名
+          // document.body.appendChild(link)
+          // link.click() // 触发下载
+          // link.remove() // 移除链接
           handleOk()
         }}
         onCancel={handleCancel}>
-        <p>确定要导出{ermData.exportProjectCode?.length ?? 0}个项目的数据吗?</p>
-        <p>
+        <p>确定要导出所有选中项目的数据吗?</p>
+        {/* <p>
           项目编号:{' '}
           {ermData.exportProjectCode?.map((item) => (
             <strong key={item}>{item},</strong>
           ))}
-        </p>
+        </p> */}
       </Modal>
     </>
   )
