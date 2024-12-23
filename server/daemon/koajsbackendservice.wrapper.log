@@ -1,0 +1,162 @@
+2024-12-04 12:25:37 - Starting C:\Program Files\nodejs\node.exe  --harmony F:\code\dataFiltering\server\node_modules\node-windows\lib\wrapper.js --file F:\code\dataFiltering\server\start.js --scriptoptions= --log "KoaJSBackendService wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-12-04 12:25:37 - Started 13032
+2024-12-04 13:21:17 - Starting C:\Program Files\nodejs\node.exe  --harmony F:\code\dataFiltering\server\node_modules\node-windows\lib\wrapper.js --file F:\code\dataFiltering\server\start.js --scriptoptions= --log "KoaJSBackendService wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-12-04 13:21:17 - Started 9908
+2024-12-04 13:26:28 - Stopping koajsbackendservice.exe
+2024-12-04 13:26:28 - ProcessKill 9908
+2024-12-04 13:26:28 - Found child process: 9520 Name: conhost.exe
+2024-12-04 13:26:28 - Found child process: 8728 Name: node.exe
+2024-12-04 13:26:28 - Stopping process 9520
+2024-12-04 13:26:28 - Send SIGINT 9520
+2024-12-04 13:26:28 - SIGINT to 9520 failed - Killing as fallback
+2024-12-04 13:26:29 - Found child process: 10600 Name: cmd.exe
+2024-12-04 13:26:29 - Found child process: 11108 Name: conhost.exe
+2024-12-04 13:26:29 - Found child process: 11448 Name: node.exe
+2024-12-04 13:26:29 - Stopping process 11108
+2024-12-04 13:26:29 - Send SIGINT 11108
+2024-12-04 13:26:29 - SIGINT to 11108 failed - Killing as fallback
+2024-12-04 13:26:29 - Found child process: 12260 Name: cmd.exe
+2024-12-04 13:26:29 - Found child process: 11012 Name: node.exe
+2024-12-04 13:26:29 - Found child process: 10636 Name: cmd.exe
+2024-12-04 13:26:29 - Found child process: 11380 Name: node.exe
+2024-12-04 13:26:29 - Stopping process 11380
+2024-12-04 13:26:29 - Send SIGINT 11380
+2024-12-04 13:26:29 - SIGINT to 11380 failed - Killing as fallback
+2024-12-04 13:26:29 - Stopping process 10636
+2024-12-04 13:26:29 - Send SIGINT 10636
+2024-12-04 13:26:29 - SIGINT to 10636 failed - Killing as fallback
+2024-12-04 13:26:29 - Stopping process 11012
+2024-12-04 13:26:29 - Send SIGINT 11012
+2024-12-04 13:26:29 - SIGINT to 11012 failed - Killing as fallback
+2024-12-04 13:26:29 - Stopping process 12260
+2024-12-04 13:26:29 - Process 12260 is already stopped
+2024-12-04 13:26:29 - Stopping process 11448
+2024-12-04 13:26:29 - Process 11448 is already stopped
+2024-12-04 13:26:29 - Stopping process 10600
+2024-12-04 13:26:29 - Process 10600 is already stopped
+2024-12-04 13:26:29 - Stopping process 8728
+2024-12-04 13:26:29 - Process 8728 is already stopped
+2024-12-04 13:26:29 - Stopping process 9908
+2024-12-04 13:26:29 - Send SIGINT 9908
+2024-12-04 13:26:29 - SIGINT to 9908 failed - Killing as fallback
+2024-12-04 13:26:29 - Finished koajsbackendservice.exe
+2024-12-04 13:26:30 - Starting C:\Program Files\nodejs\node.exe  --harmony F:\code\dataFiltering\server\node_modules\node-windows\lib\wrapper.js --file F:\code\dataFiltering\server\start.js --scriptoptions= --log "KoaJSBackendService wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-12-04 13:26:30 - Started 23560
+2024-12-04 13:26:43 - Stopping koajsbackendservice.exe
+2024-12-04 13:26:43 - ProcessKill 23560
+2024-12-04 13:26:44 - Found child process: 17592 Name: conhost.exe
+2024-12-04 13:26:44 - Found child process: 12360 Name: node.exe
+2024-12-04 13:26:44 - Stopping process 17592
+2024-12-04 13:26:44 - Send SIGINT 17592
+2024-12-04 13:26:44 - SIGINT to 17592 failed - Killing as fallback
+2024-12-04 13:26:44 - Found child process: 15876 Name: cmd.exe
+2024-12-04 13:26:44 - Found child process: 22956 Name: conhost.exe
+2024-12-04 13:26:44 - Found child process: 8636 Name: node.exe
+2024-12-04 13:26:44 - Stopping process 22956
+2024-12-04 13:26:44 - Send SIGINT 22956
+2024-12-04 13:26:44 - SIGINT to 22956 failed - Killing as fallback
+2024-12-04 13:26:44 - Found child process: 2496 Name: cmd.exe
+2024-12-04 13:26:44 - Found child process: 22888 Name: node.exe
+2024-12-04 13:26:44 - Found child process: 11624 Name: cmd.exe
+2024-12-04 13:26:44 - Found child process: 21212 Name: node.exe
+2024-12-04 13:26:44 - Stopping process 21212
+2024-12-04 13:26:44 - Send SIGINT 21212
+2024-12-04 13:26:44 - SIGINT to 21212 failed - Killing as fallback
+2024-12-04 13:26:44 - Stopping process 11624
+2024-12-04 13:26:44 - Send SIGINT 11624
+2024-12-04 13:26:44 - SIGINT to 11624 failed - Killing as fallback
+2024-12-04 13:26:44 - Stopping process 22888
+2024-12-04 13:26:44 - Send SIGINT 22888
+2024-12-04 13:26:44 - SIGINT to 22888 failed - Killing as fallback
+2024-12-04 13:26:44 - Stopping process 2496
+2024-12-04 13:26:44 - Process 2496 is already stopped
+2024-12-04 13:26:44 - Stopping process 8636
+2024-12-04 13:26:44 - Process 8636 is already stopped
+2024-12-04 13:26:44 - Stopping process 15876
+2024-12-04 13:26:44 - Process 15876 is already stopped
+2024-12-04 13:26:44 - Stopping process 12360
+2024-12-04 13:26:44 - Process 12360 is already stopped
+2024-12-04 13:26:44 - Stopping process 23560
+2024-12-04 13:26:44 - Send SIGINT 23560
+2024-12-04 13:26:44 - SIGINT to 23560 failed - Killing as fallback
+2024-12-04 13:26:44 - Finished koajsbackendservice.exe
+2024-12-04 14:26:14 - Starting C:\Program Files\nodejs\node.exe  --harmony F:\code\dataFiltering\server\node_modules\node-windows\lib\wrapper.js --file F:\code\dataFiltering\server\start.js --scriptoptions= --log "KoaJSBackendService wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-12-04 14:26:14 - Started 8964
+2024-12-04 14:30:59 - Stopping koajsbackendservice.exe
+2024-12-04 14:30:59 - ProcessKill 8964
+2024-12-04 14:30:59 - Found child process: 7240 Name: conhost.exe
+2024-12-04 14:30:59 - Found child process: 10052 Name: node.exe
+2024-12-04 14:30:59 - Stopping process 7240
+2024-12-04 14:30:59 - Send SIGINT 7240
+2024-12-04 14:30:59 - SIGINT to 7240 failed - Killing as fallback
+2024-12-04 14:30:59 - Found child process: 10624 Name: cmd.exe
+2024-12-04 14:30:59 - Found child process: 10648 Name: conhost.exe
+2024-12-04 14:30:59 - Found child process: 11004 Name: node.exe
+2024-12-04 14:30:59 - Stopping process 10648
+2024-12-04 14:30:59 - Send SIGINT 10648
+2024-12-04 14:30:59 - SIGINT to 10648 failed - Killing as fallback
+2024-12-04 14:31:00 - Found child process: 5816 Name: cmd.exe
+2024-12-04 14:31:00 - Found child process: 6832 Name: node.exe
+2024-12-04 14:31:00 - Found child process: 7100 Name: cmd.exe
+2024-12-04 14:31:00 - Found child process: 5932 Name: node.exe
+2024-12-04 14:31:00 - Stopping process 5932
+2024-12-04 14:31:00 - Send SIGINT 5932
+2024-12-04 14:31:00 - SIGINT to 5932 failed - Killing as fallback
+2024-12-04 14:31:00 - Stopping process 7100
+2024-12-04 14:31:00 - Send SIGINT 7100
+2024-12-04 14:31:00 - SIGINT to 7100 failed - Killing as fallback
+2024-12-04 14:31:00 - Stopping process 6832
+2024-12-04 14:31:00 - Send SIGINT 6832
+2024-12-04 14:31:00 - SIGINT to 6832 failed - Killing as fallback
+2024-12-04 14:31:00 - Stopping process 5816
+2024-12-04 14:31:00 - Process 5816 is already stopped
+2024-12-04 14:31:00 - Stopping process 11004
+2024-12-04 14:31:00 - Process 11004 is already stopped
+2024-12-04 14:31:00 - Stopping process 10624
+2024-12-04 14:31:00 - Process 10624 is already stopped
+2024-12-04 14:31:00 - Stopping process 10052
+2024-12-04 14:31:00 - Process 10052 is already stopped
+2024-12-04 14:31:00 - Stopping process 8964
+2024-12-04 14:31:00 - Send SIGINT 8964
+2024-12-04 14:31:00 - SIGINT to 8964 failed - Killing as fallback
+2024-12-04 14:31:00 - Finished koajsbackendservice.exe
+2024-12-18 12:49:19 - Starting C:\Program Files\nodejs\node.exe  --harmony F:\code\dataFiltering\server\node_modules\node-windows\lib\wrapper.js --file F:\code\dataFiltering\server\start.js --scriptoptions= --log "KoaJSBackendService wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-12-18 12:49:19 - Started 17176
+2024-12-18 12:50:19 - Stopping koajsbackendservice.exe
+2024-12-18 12:50:19 - ProcessKill 17176
+2024-12-18 12:50:19 - Found child process: 7816 Name: conhost.exe
+2024-12-18 12:50:19 - Found child process: 22072 Name: node.exe
+2024-12-18 12:50:19 - Stopping process 7816
+2024-12-18 12:50:19 - Send SIGINT 7816
+2024-12-18 12:50:19 - SIGINT to 7816 failed - Killing as fallback
+2024-12-18 12:50:19 - Found child process: 5116 Name: cmd.exe
+2024-12-18 12:50:19 - Found child process: 5244 Name: conhost.exe
+2024-12-18 12:50:19 - Found child process: 23956 Name: node.exe
+2024-12-18 12:50:19 - Stopping process 5244
+2024-12-18 12:50:19 - Send SIGINT 5244
+2024-12-18 12:50:19 - SIGINT to 5244 failed - Killing as fallback
+2024-12-18 12:50:20 - Found child process: 21840 Name: cmd.exe
+2024-12-18 12:50:20 - Found child process: 3392 Name: node.exe
+2024-12-18 12:50:20 - Found child process: 17896 Name: cmd.exe
+2024-12-18 12:50:20 - Found child process: 23684 Name: node.exe
+2024-12-18 12:50:20 - Stopping process 23684
+2024-12-18 12:50:20 - Send SIGINT 23684
+2024-12-18 12:50:20 - SIGINT to 23684 failed - Killing as fallback
+2024-12-18 12:50:20 - Stopping process 17896
+2024-12-18 12:50:20 - Send SIGINT 17896
+2024-12-18 12:50:20 - SIGINT to 17896 failed - Killing as fallback
+2024-12-18 12:50:20 - Stopping process 3392
+2024-12-18 12:50:20 - Send SIGINT 3392
+2024-12-18 12:50:20 - SIGINT to 3392 failed - Killing as fallback
+2024-12-18 12:50:20 - Stopping process 21840
+2024-12-18 12:50:20 - Process 21840 is already stopped
+2024-12-18 12:50:20 - Stopping process 23956
+2024-12-18 12:50:20 - Process 23956 is already stopped
+2024-12-18 12:50:20 - Stopping process 5116
+2024-12-18 12:50:20 - Process 5116 is already stopped
+2024-12-18 12:50:20 - Stopping process 22072
+2024-12-18 12:50:20 - Process 22072 is already stopped
+2024-12-18 12:50:20 - Stopping process 17176
+2024-12-18 12:50:20 - Send SIGINT 17176
+2024-12-18 12:50:20 - SIGINT to 17176 failed - Killing as fallback
+2024-12-18 12:50:20 - Finished koajsbackendservice.exe

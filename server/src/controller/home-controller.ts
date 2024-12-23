@@ -5,6 +5,7 @@ import { Context } from 'koa'
 import homeService from '../service/home-service'
 import dataFilteringService from '../service/dataFiltering.service'
 import 'koa-body'
+import { createContext } from 'vm'
 /**
  * 返回hello world
  * @param ctx
@@ -58,6 +59,15 @@ export const exportDataToExcel = async (ctx: Context) => {
  * 接收post请求，并获取参数
  * @param ctx
  */
+export const exportDataToExcelByCode = async (ctx: Context) => {
+  const { exportArray } = ctx.request.query as { exportArray: string[] }
+  //const codes = projectCode?.split(',')
+  const buffer = await dataFilteringService.exportDataToExcel_byCode(exportArray)
+  const fileName = encodeURIComponent('导出数据.xlsx')
+  ctx.set('Content-Disposition', `attachment; filename=${fileName}`)
+  ctx.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  ctx.body = buffer
+}
 export const postTest = async (ctx: Context) => {
   const params = ctx.request.body
   const res = await homeService.postTest(params)
