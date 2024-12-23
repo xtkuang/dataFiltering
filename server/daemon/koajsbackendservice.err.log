@@ -1,0 +1,133 @@
+[stderr] 
+  Error: ENOENT: no such file or directory, open 'F:\code\dataFiltering\server\upload\1f96ed1cf72382caf018e6100.19.xlsx'
+
+
+[stderr] CustomError: 未授权
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:15:13
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:4:12)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:6:53
+    at dispatch (F:\code\dataFiltering\server\node_modules\koa-compose\index.js:42:32)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:26
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:71 {
+  code: 401
+}
+
+[stderr] PrismaClientKnownRequestError: 
+Invalid `ctx.prisma.session.findUnique()` invocation in
+F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:17:36
+
+  14 if (!token) {
+  15   throw new CustomError(401, '未授权')
+  16 }
+→ 17 if (!(await ctx.prisma.session.findUnique(
+The table `main.Session` does not exist in the current database.
+    at $n.handleRequestError (F:\code\dataFiltering\server\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (F:\code\dataFiltering\server\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (F:\code\dataFiltering\server\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (F:\code\dataFiltering\server\node_modules\@prisma\client\runtime\library.js:130:9633) {
+  code: 'P2021',
+  clientVersion: '5.22.0',
+  meta: { modelName: 'Session', table: 'main.Session' }
+}
+
+[stderr] CustomError: 登录失败，用户名或密码错误
+    at UserService.<anonymous> (F:\code\dataFiltering\server\src\service\user.service.ts:75:13)
+    at Generator.throw (<anonymous>)
+    at rejected (F:\code\dataFiltering\server\src\service\user.service.ts:6:65) {
+  code: 201
+}
+
+[stderr] CustomError: 未授权
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:15:13
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:4:12)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:6:53
+    at dispatch (F:\code\dataFiltering\server\node_modules\koa-compose\index.js:42:32)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:26
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:71 {
+  code: 401
+}
+
+[stderr] CustomError: 未授权
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:15:13
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:4:12)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:6:53
+    at dispatch (F:\code\dataFiltering\server\node_modules\koa-compose\index.js:42:32)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:26
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:71 {
+  code: 401
+}
+
+[stderr] CustomError: 未授权
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:15:13
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:4:12)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:6:53
+    at dispatch (F:\code\dataFiltering\server\node_modules\koa-compose\index.js:42:32)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:26
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:71 {
+  code: 401
+}
+
+[stderr] CustomError: 未授权
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:15:13
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:4:12)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:6:53
+    at dispatch (F:\code\dataFiltering\server\node_modules\koa-compose\index.js:42:32)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:26
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:71 {
+  code: 401
+}
+
+[stderr] CustomError: 登录失败，用户名或密码错误
+    at UserService.<anonymous> (F:\code\dataFiltering\server\src\service\user.service.ts:75:13)
+    at Generator.throw (<anonymous>)
+    at rejected (F:\code\dataFiltering\server\src\service\user.service.ts:6:65) {
+  code: 201
+}
+
+[stderr] CustomError: 登录失败，用户名或密码错误
+    at UserService.<anonymous> (F:\code\dataFiltering\server\src\service\user.service.ts:75:13)
+    at Generator.throw (<anonymous>)
+    at rejected (F:\code\dataFiltering\server\src\service\user.service.ts:6:65) {
+  code: 201
+}
+
+[stderr] CustomError: 未授权
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:15:13
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:4:12)
+    at F:\code\dataFiltering\server\src\middleware\jwtAuth.ts:6:53
+    at dispatch (F:\code\dataFiltering\server\node_modules\koa-compose\index.js:42:32)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:26
+    at Generator.next (<anonymous>)
+    at F:\code\dataFiltering\server\src\middleware\globalResponse.ts:8:71 {
+  code: 401
+}
+
+[stderr] npm notice
+npm notice New major version of npm available! 10.7.0 -> 11.0.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.0.0
+npm notice To update run: npm install -g npm@11.0.0
+npm notice
+

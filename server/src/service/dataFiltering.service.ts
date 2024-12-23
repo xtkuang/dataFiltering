@@ -270,6 +270,221 @@ class DataFilteringService {
     })
     return data
   }
+  async getDataByCode(params: Array<string>,ifExcel:boolean=false) {
+    let count=0;
+    let result=[];
+    
+    
+    for(const param of params){
+      count=param.split('=').length-1;
+      if(count==0){ //项目编号，查项目，并插入到result 
+        const data=await prisma.project.findFirst({
+          where:{code:param},
+          include:{
+            equipments:{
+              include:{
+                workstations:{
+                  include:{
+                    materials:true
+                  }
+                }
+              }
+            }
+          }
+        });
+      if(data&&data.equipments){
+        for(const equipment of data.equipments){
+          if(equipment.workstations){
+              for(const workstation of equipment.workstations){
+                if(workstation.materials){
+                  for(const material of workstation.materials){
+                  result.push(
+                    {
+                      projectName:data.name,
+                      projectCode:data.code,
+                      projectCategory:data.category,
+                      equipmentCode:equipment.code,
+                      equipmentName:equipment.name,
+                      equipmentType:equipment.type,
+                      workstationCode:workstation.code,
+                      workstationName:workstation.name,
+                      workstationType:workstation.type,
+                      workstationDesignHours:workstation.designHours,
+                      workstationElectHours:workstation.electHours,
+                      workstationAssemblyHours:workstation.assemblyHours,
+                      materialCode:material.code,
+                      materialName:material.name,
+                      materialModelNumber:material.modelNumber,
+                      materialCategory:material.category,
+                      materialBrand:material.brand,
+                      materialLowestPrice:material.lowestPrice,
+                      materialHighestPrice:material.highestPrice,
+                      materialAveragePrice:material.averagePrice,
+                      materialRequestNumber:material.requestNumber,
+                    }
+                  );
+                }
+              }
+            }
+          }
+        }
+      }
+      }else if(count==1){ //设备编号，查设备，并插入到result 
+        const data=await prisma.equipment.findFirst({
+          where:{id:param},
+          include:{
+            project:true,
+            workstations:{
+              include:{
+                materials:true,
+              }
+            }
+          }
+        });
+        if(data&&data.workstations){ //查设备，并插入到result 
+          for(const workstation of data.workstations){
+            if(workstation.materials){
+              for(const material of workstation.materials){
+                result.push(
+                  {
+                    projectName:data.project.name,
+                    projectCode:data.project.code,
+                    projectCategory:data.project.category,
+                    equipmentCode:data.code,
+                    equipmentName:data.name,
+                    equipmentType:data.type,
+                    workstationCode:workstation.code,
+                    workstationName:workstation.name,
+                    workstationType:workstation.type,
+                    workstationDesignHours:workstation.designHours,
+                    workstationElectHours:workstation.electHours,
+                    workstationAssemblyHours:workstation.assemblyHours,
+                    materialCode:material.code,
+                    materialName:material.name,
+                    materialModelNumber:material.modelNumber,
+                    materialCategory:material.category,
+                    materialBrand:material.brand,
+                    materialLowestPrice:material.lowestPrice,
+                    materialHighestPrice:material.highestPrice,
+                    materialAveragePrice:material.averagePrice,
+                    materialRequestNumber:material.requestNumber,
+                  }
+                );
+              }
+            }
+          }
+        }
+      } else if(count==2){   //工位编号，查工位并将包含的物料插入到result 
+        const data=await prisma.workstation.findFirst({
+          where:{id:param},
+          include:{
+            materials:true,
+            equipment:{
+              include:{
+                project:true
+              }
+            }
+          }
+        });
+        if(data&&data.materials){
+          //result.push(...data.materials);
+          for(const material of data.materials){
+            result.push({
+              projectName:data.equipment.project.name,
+              projectCode:data.equipment.project.code,
+              projectCategory:data.equipment.project.category,
+              equipmentCode:data.equipment.code,
+              equipmentName:data.equipment.name,
+              equipmentType:data.equipment.type,
+              workstationCode:data.code,
+              workstationName:data.name,
+              workstationType:data.type,
+              workstationDesignHours:data.designHours,
+              workstationElectHours:data.electHours,
+              workstationAssemblyHours:data.assemblyHours,
+              materialCode:material.code,
+              materialName:material.name,
+              materialModelNumber:material.modelNumber,
+              materialCategory:material.category,
+              materialBrand:material.brand,
+              materialLowestPrice:material.lowestPrice,
+              materialHighestPrice:material.highestPrice,
+              materialAveragePrice:material.averagePrice,
+              materialRequestNumber:material.requestNumber,
+            });
+
+          }
+        }
+      }else if(count==3){ //物料编号，直接查物料并插入到result 
+        const data=await prisma.material.findFirst({
+          where:{id:param},
+          include:{
+            workstation:{
+              include:{
+                equipment:{
+                  include:{
+                    project:true
+                  }
+                }
+              }
+            }
+          }
+        });
+        if(data){
+          result.push({
+            projectName:data.workstation.equipment.project.name,
+            projectCode:data.workstation.equipment.project.code,
+            projectCategory:data.workstation.equipment.project.category,
+            equipmentCode:data.workstation.equipment.code,
+            equipmentName:data.workstation.equipment.name,
+            equipmentType:data.workstation.equipment.type,
+            workstationCode:data.workstation.code,
+            workstationName:data.workstation.name,
+            workstationType:data.workstation.type,
+            materialCode:data.code,
+            materialName:data.name,
+            materialModelNumber:data.modelNumber,
+            materialCategory:data.category,
+            materialBrand:data.brand,
+            materialLowestPrice:data.lowestPrice,
+            materialHighestPrice:data.highestPrice,
+            materialAveragePrice:data.averagePrice,
+            materialRequestNumber:data.requestNumber,
+          });
+        }
+      }
+    }
+    if(ifExcel){
+      const excelData=[]
+      for(const item of result){
+        excelData.push({
+          项目名称:item.projectName,
+          项目编号:item.projectCode,
+          项目分类:item.projectCategory,
+          设备编号:item.equipmentCode,
+          设备名称:item.equipmentName,
+          设备类型:item.equipmentType,
+          工位编号:item.workstationCode,
+          工位名称:item.workstationName,
+          工位类型:item.workstationType,
+          设计工时:item.workstationDesignHours,
+          电气工时:item.workstationElectHours,
+          装配工时:item.workstationAssemblyHours,
+          物料编号:item.materialCode,
+          物料名称:item.materialName,
+          需求数量:item.materialRequestNumber,
+          物料分类:item.materialCategory,
+          型号图号:item.materialModelNumber,
+          品牌:item.materialBrand,
+          最低价:item.materialLowestPrice,
+          最高价:item.materialHighestPrice,
+          均价:item.materialAveragePrice, 
+        });
+      }
+      return excelData;
+    }
+    return result;
+  }
   async inputData(params: any) {
     const data = await prisma.project.create({
       data: {
@@ -581,6 +796,19 @@ class DataFilteringService {
       console.error('导出数据时出错:', error)
     }
   }
+  async exportDataToExcel_byCode(params:string[] | undefined) {
+    const data=await this.getDataByCode(params,true);
+    //const excelData = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(workbook, worksheet, '数据');
+    const fileBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'buffer',
+    });
+    return fileBuffer;
+  }
 }
+
 
 export default new DataFilteringService()

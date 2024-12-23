@@ -7,6 +7,7 @@ import {
   getData,
   searchText,
   exportDataToExcel,
+  exportDataToExcelByCode,
 } from './controller/home-controller'
 import {
   getUser,
@@ -45,4 +46,5 @@ export default [
   { path: '/erm/search', type: 'get', action: searchText },
   { path: '/erm/reset', type: 'post', action: dataFiltering.resetTable },
   { path: '/erm/export', type: 'get', action: exportDataToExcel },
+  { path: '/erm/exportByCode', type: 'post', action: exportDataToExcelByCode },
 ]
