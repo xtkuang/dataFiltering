@@ -34,27 +34,36 @@ export default observer(function Home() {
   const [edit, setEdit] = useState<any>(null)
   const [updatePasswordModal, setUpdatePasswordModal] = useState<any>(null)
   useEffect(() => {
-    user.getUserInfo()
-    user.getUserList().then(() => {
-      setLoading(false)
-    })
+    let handle_fetch = user.user === null || user.userList.length === 0
+    if (handle_fetch) {
+      user.getUserInfo()
+      user.getUserList().then(() => {
+        setLoading(false)
+      })
+    }
+    !handle_fetch && setLoading(false)
   }, [])
   const columns: ColumnsType<any> = [
     {
       title: '用户名',
       dataIndex: 'username',
-      render: (text, record) => (
-        <span
-          style={{
-            fontSize: 16,
-            fontWeight: 'bold',
-            // backgroundColor: '#f0f0f0',
-            color: '#000',
-            padding: '5px',
-          }}>
-          {text}
-        </span>
-      ),
+      render: (text, record) => {
+        let style: any = {
+          fontSize: 16,
+          fontWeight: 'bold',
+          // backgroundColor: '#fff',
+          color: '#000',
+          padding: '5px',
+        }
+        if (text === user.user.username)
+          style = {
+            ...style,
+
+            fontStyle: 'italic',
+            textDecoration: 'underline',
+          }
+        return <span style={style}>{text}</span>
+      },
     },
     {
       title: '角色',
@@ -108,7 +117,7 @@ export default observer(function Home() {
           disabled={user.user?.role === 'user'}
           onClick={() =>
             Modal.confirm({
-              title: `确定要登出 ${record.username} 用户吗？`,
+              title: `确定要删除 ${record.username} 用户吗？`,
               okText: '确定',
               cancelText: '取消',
               onOk() {
@@ -117,6 +126,9 @@ export default observer(function Home() {
                   setLoading(false)
                   message.success(`${record.username}删除成功`)
                 })
+              },
+              onCancel() {
+                message.warning('取消删除用户')
               },
             })
           }
@@ -157,8 +169,7 @@ export default observer(function Home() {
                 })
               },
               onCancel() {
-                setEdit({})
-                message.warning('取消删除用户')
+                message.warning('取消登出用户')
               },
             })
           }

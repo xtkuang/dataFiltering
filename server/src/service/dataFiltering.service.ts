@@ -195,6 +195,7 @@ class DataFilteringService {
       n++
       return data
     } catch (error) {
+      console.error(error)
       throw new CustomError(501, '数据解析失败')
     }
   } //数据解析服务
@@ -628,22 +629,30 @@ class DataFilteringService {
     const materialList: Material[] = []
     for (const row of rows) {
       if (!row[2] || !row[4] || !row[7] || !row[13]) {
-        console.log('数据缺失:', row);
-        continue;
+        console.log('数据缺失:', row)
+        continue
       }
       const projectId = String(row[2])
       const equipmentId = projectId + '=' + String(row[4])
-      const workStationId = projectId + '=' + String(row[4]) + '=' + String(row[7])
-      const materialId = projectId + '=' + String(row[4]) + '=' + String(row[7]) + '=' + String(row[13])
+      const workStationId =
+        projectId + '=' + String(row[4]) + '=' + String(row[7])
+      const materialId =
+        projectId +
+        '=' +
+        String(row[4]) +
+        '=' +
+        String(row[7]) +
+        '=' +
+        String(row[13])
       if (
         !existedProject.some((project) => project.id === projectId) &&
         !projectList.some((project) => project.id === projectId)
       ) {
         projectList.push({
           id: projectId,
-          name: String(row[3]) || '',
-          code: String(row[2]) || '',
-          category: String(row[1]) || '',
+          name: String(String(row[3])) || '',
+          code: String(String(row[2])) || '',
+          category: String(String(row[1])) || '',
           createdAt: new Date(),
           updatedAt: new Date(),
         })

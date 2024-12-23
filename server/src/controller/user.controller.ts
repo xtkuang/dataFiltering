@@ -2,7 +2,7 @@ import { Context } from 'koa'
 import UserService from '../service/user.service' // 引入 UserService
 import * as bcrypt from 'bcrypt'
 import { CustomError } from 'src/error'
-import userService from '../service/user.service'
+
 export const auth = async (ctx: Context) => {
   if (ctx.state.user) {
     return 'success'
