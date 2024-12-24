@@ -60,7 +60,7 @@ export const exportDataToExcel = async (ctx: Context) => {
  * @param ctx
  */
 export const exportDataToExcelByCode = async (ctx: Context) => {
-  const { exportArray } = ctx.request.query as { exportArray: string[] }
+  const { exportArray } = ctx.request.body as { exportArray: string[] }
   //const codes = projectCode?.split(',')
   const buffer = await dataFilteringService.exportDataToExcel_byCode(exportArray)
   const fileName = encodeURIComponent('导出数据.xlsx')
