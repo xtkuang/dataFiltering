@@ -11,24 +11,24 @@ export async function middleware(request: NextRequest) {
     url.searchParams.set('redirect', request.nextUrl.pathname)
     return NextResponse.redirect(url)
   }
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
-  let auth = null
+  // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+  // let auth = null
 
-  try {
-    auth = await fetch(`${baseUrl}/user/auth`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((res) => res.json())
-  } catch (error) {
-    // console.log(error)
-  }
+  // try {
+  //   auth = await fetch(`${baseUrl}/user/auth`, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   }).then((res) => res.json())
+  // } catch (error) {
+  //   // console.log(error)
+  // }
 
-  if (auth?.code !== 200) {
-    const response = NextResponse.redirect(new URL('/login', request.url))
-    response.cookies.delete('token')
-    return response
-  }
+  // if (auth?.code !== 200) {
+  //   const response = NextResponse.redirect(new URL('/login', request.url))
+  //   response.cookies.delete('token')
+  //   return response
+  // }
   return NextResponse.next()
 }
 
