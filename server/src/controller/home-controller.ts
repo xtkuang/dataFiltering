@@ -65,7 +65,8 @@ export const exportDataToExcelByCode = async (ctx: Context) => {
   const buffer = await dataFilteringService.exportDataToExcel_byCode(
     exportArray
   )
-  const fileName = encodeURIComponent('导出数据.xlsx')
+  const random=Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  const fileName = encodeURIComponent(random+'.xlsx')
   ctx.set('Content-Disposition', `attachment; filename=${fileName}`)
   ctx.set(
     'Content-Type',
