@@ -163,7 +163,7 @@ class ErmData {
   //   return selectedList
   // }
   async exportExcel() {
-    DataFilterApi.exportExcel(this.exportArray)
+    return DataFilterApi.exportExcel(this.exportArray)
     // if (this.exportProjectCode) {
     //   return DataFilterApi.exportExcel(this.exportProjectCode)
     // }

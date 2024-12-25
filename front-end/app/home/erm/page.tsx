@@ -193,8 +193,11 @@ const ErmTable = observer(
         setSelect([...selectedRowKeys, ''] as string[])
       },
       onSelectAll: (selected, selectedRows, changeRows) => {
-        // ermData.setExportTree(changeRows.map((item) => item.id), selected)
-        console.log(selected, selectedRows, changeRows)
+        ermData.setExportTree(
+          changeRows.map((item) => item.id),
+          selected
+        )
+        // console.log(selected, selectedRows, changeRows)
       },
       onSelect: (changedRow, selected, selectedRows, nativeEvent) => {
         ermData.setExportTree([changedRow.id], selected)
@@ -427,18 +430,25 @@ const ExportButton: React.FC = () => {
         title="导出确认"
         open={isModalOpen}
         onOk={async () => {
-          // // const downloadUrl =
-          // //   process.env.NEXT_PUBLIC_BASE_URL +
-          // //   '/erm/export' +
-          // //   '?projectCode=' +
-          // //   ermData.exportArrayode?.join(',')
+          await ermData.exportExcel().then((res: any) => {
+            const filename = decodeURIComponent(
+              res.headers['content-disposition'].split('=')[1]
+            )
 
-          // const link = document.createElement('a')
-          // link.href = downloadUrl
-          // link.setAttribute('download', 'exported_data.xlsx') // 设置下载文件名
-          // document.body.appendChild(link)
-          // link.click() // 触发下载
-          // link.remove() // 移除链接
+            const data = res.data
+            const blob = new Blob([data], {
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            })
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.style.display = 'none'
+            a.href = url
+
+            a.download = filename
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+          })
           handleOk()
         }}
         onCancel={handleCancel}>

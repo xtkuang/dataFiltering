@@ -47,10 +47,23 @@ service.interceptors.response.use(
    */
   (response) => {
     const res = response.data
+    // console.log(res)
 
+    if (
+      response.headers['content-type']
+        ?.toString()
+        .includes(
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+    ) {
+      return response
+    }
     // if the custom code is not 200, it is judged as an error.
     if (res.code !== 200) {
       if (typeof window !== 'undefined') message.error(res.msg || 'Error')
+      if (res.code === 401) {
+        localStorage.removeItem('token')
+      }
       // !处理登录状态失效的逻辑
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       // if (res.code === 50008 || res.code === 50012 || res.code === 50014) {

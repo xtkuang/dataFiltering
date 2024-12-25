@@ -11,7 +11,17 @@ class DataFilterApi {
     return request.get(`/erm/search?query=${query}`)
   }
   async exportExcel(exportArray: string[]) {
-    return request.post(`/erm/export`, { exportArray })
+    return request(`/erm/exportByCode`, {
+      method: 'POST',
+      responseType: 'arraybuffer',
+      headers: {},
+      data: {
+        exportArray,
+      },
+    })
+    // return request.post(`/erm/exportByCode`, {
+    //   exportArray,
+    // })
   }
 }
 const dataFilterApi = new DataFilterApi()
