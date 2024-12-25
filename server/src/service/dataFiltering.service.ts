@@ -281,6 +281,7 @@ class DataFilteringService {
         const data=await prisma.project.findFirst({
           where:{code:param},
           include:{
+            //name:true,
             equipments:{
               include:{
                 workstations:{
@@ -482,6 +483,59 @@ class DataFilteringService {
         });
       }
       return excelData;
+    }
+    return result;
+  }
+  async getDataByCode_excel(params:Array<string>){
+    let result=[];
+    let count=0;
+    for (const param of params){
+      count=param.split('=').length-1;
+      if(count==3){
+        const data=await prisma.material.findFirst({
+          where:{id:param},
+          include:{
+            workstation:{
+              include:{
+                equipment:{
+                  include:{
+                    project:true
+                  }
+                }
+              }
+            }
+          }
+        });
+        if(data){
+          result.push({
+            序号:undefined,
+            项目名称:data.workstation.equipment.project.name,
+            项目编号:data.workstation.equipment.project.code,
+            项目分类:data.workstation.equipment.project.category,
+            设备编号:data.workstation.equipment.code,
+            设备名称:data.workstation.equipment.name,
+            设备类型:data.workstation.equipment.type,
+            工位编号:data.workstation.code,
+            工位名称:data.workstation.name,
+            工位类型:data.workstation.type,
+            设计工时:data.workstation.designHours,
+            电气工时:data.workstation.electHours,
+            装配工时:data.workstation.assemblyHours,
+            物料编号:data.code,
+            物料名称:data.name,
+            需求数量:data.requestNumber,
+            物料分类:data.category,
+            型号图号:data.modelNumber,
+            品牌:data.brand,
+            最低价:data.lowestPrice,
+            最高价:data.highestPrice,
+            均价:data.averagePrice,
+          });
+        }
+      }else{
+        continue;
+      }
+
     }
     return result;
   }
@@ -797,7 +851,7 @@ class DataFilteringService {
     }
   }
   async exportDataToExcel_byCode(params:string[] | undefined) {
-    const data=await this.getDataByCode(params,true);
+    const data=await this.getDataByCode_excel(params);
     //const excelData = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(data);
