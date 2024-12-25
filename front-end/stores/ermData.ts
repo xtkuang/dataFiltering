@@ -125,7 +125,7 @@ class ErmData {
       )
       material.selected = selected
     }
-    console.log(this.exportTree)
+    // console.log(this.exportTree)
     const list = this.traverseExportTree(this.exportTree)
     console.log(list)
     this.exportArray = list
@@ -162,6 +162,10 @@ class ErmData {
   //   }
   //   return selectedList
   // }
+  resetExportArray() {
+    this.initExportTree()
+    this.exportArray = []
+  }
   async exportExcel() {
     return DataFilterApi.exportExcel(this.exportArray)
     // if (this.exportProjectCode) {
@@ -212,16 +216,22 @@ class ErmData {
     const project = this.ermData.find((item) => item.code === codes[0])
     if (project) {
       this.selectedProject = project
+      this.selectedEquipment = null
+      this.selectedWorkstation = null
+      this.selectedMaterial = null
     }
     const equipment = project?.equipments.find((item) => item.code === codes[1])
     if (equipment) {
       this.selectedEquipment = equipment
+      this.selectedWorkstation = null
+      this.selectedMaterial = null
     }
     const workstation = equipment?.workstations.find(
       (item) => item.code === codes[2]
     )
     if (workstation) {
       this.selectedWorkstation = workstation
+      this.selectedMaterial = null
     }
     const material = workstation?.materials.find(
       (item) => item.code === codes[3]

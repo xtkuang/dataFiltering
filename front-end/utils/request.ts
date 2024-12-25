@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { message } from 'antd'
+import { removeToken } from './cookie'
 // import store from '@/store'
 
 // create an axios instance
@@ -63,6 +64,7 @@ service.interceptors.response.use(
       if (typeof window !== 'undefined') message.error(res.msg || 'Error')
       if (res.code === 401) {
         localStorage.removeItem('token')
+        removeToken()
       }
       // !处理登录状态失效的逻辑
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
