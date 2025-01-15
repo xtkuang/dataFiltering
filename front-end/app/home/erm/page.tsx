@@ -101,6 +101,12 @@ export default observer(function Home() {
         <div className="basis-1/12 flex gap-4">
           <UploadButton />
           <ExportButton></ExportButton>
+          <Button
+            onClick={() => {
+              ermData.resetExportArray()
+            }}>
+            清空已选
+          </Button>
           <div className="w-1/2 relative ">
             <Search />
           </div>

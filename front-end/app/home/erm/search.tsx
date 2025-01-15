@@ -37,7 +37,6 @@ const App: React.FC = observer(() => {
     []
   )
   const search = async (value: string) => {
-    console.log('search:', value)
     ermData.resetSearchData()
     setSearchValue(value)
     setLoading(true)
@@ -51,7 +50,6 @@ const App: React.FC = observer(() => {
           })
         })
       }
-      console.log(ermData.searchData)
     })
     setLoading(false)
   }
@@ -95,7 +93,7 @@ const App: React.FC = observer(() => {
         value={null}
         onSelect={(value: any) => {
           setOpen(false)
-          console.log(value)
+
           ermData.setSelected(value)
         }}
       />
