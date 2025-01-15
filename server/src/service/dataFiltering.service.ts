@@ -14,6 +14,9 @@ class DataFilteringService {
       const fileBuffer = fs.readFileSync(filePath)
       const workbook = XLSX.read(fileBuffer, { type: 'buffer' })
       const worksheet = workbook.Sheets[workbook.SheetNames[0]]
+      if(worksheet["!merges"]&&worksheet["!merges"].length>0){
+        throw new CustomError(501,'存在合并单元格');  
+      }
       const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
       const rows = data.slice(4)
 
@@ -193,10 +196,10 @@ class DataFilteringService {
       // }
       console.log('数据解析完成')
       n++
-      return data
+      return {success:true,data:data} //返回解析后的数据
     } catch (error) {
-      console.error(error)
-      throw new CustomError(501, '数据解析失败')
+      console.error(error);
+      throw new CustomError(501, '数据解析失败:'+error.name+error.message);
     }
   } //数据解析服务
 
@@ -270,221 +273,8 @@ class DataFilteringService {
     })
     return data
   }
-  async getDataByCode(params: Array<string>,ifExcel:boolean=false) {
-    let count=0;
-    let result=[];
+  async getDataByCode(params: Array<string>) {
     
-    
-    for(const param of params){
-      count=param.split('=').length-1;
-      if(count==0){ //项目编号，查项目，并插入到result 
-        const data=await prisma.project.findFirst({
-          where:{code:param},
-          include:{
-            //name:true,
-            equipments:{
-              include:{
-                workstations:{
-                  include:{
-                    materials:true
-                  }
-                }
-              }
-            }
-          }
-        });
-      if(data&&data.equipments){
-        for(const equipment of data.equipments){
-          if(equipment.workstations){
-              for(const workstation of equipment.workstations){
-                if(workstation.materials){
-                  for(const material of workstation.materials){
-                  result.push(
-                    {
-                      projectName:data.name,
-                      projectCode:data.code,
-                      projectCategory:data.category,
-                      equipmentCode:equipment.code,
-                      equipmentName:equipment.name,
-                      equipmentType:equipment.type,
-                      workstationCode:workstation.code,
-                      workstationName:workstation.name,
-                      workstationType:workstation.type,
-                      workstationDesignHours:workstation.designHours,
-                      workstationElectHours:workstation.electHours,
-                      workstationAssemblyHours:workstation.assemblyHours,
-                      materialCode:material.code,
-                      materialName:material.name,
-                      materialModelNumber:material.modelNumber,
-                      materialCategory:material.category,
-                      materialBrand:material.brand,
-                      materialLowestPrice:material.lowestPrice,
-                      materialHighestPrice:material.highestPrice,
-                      materialAveragePrice:material.averagePrice,
-                      materialRequestNumber:material.requestNumber,
-                    }
-                  );
-                }
-              }
-            }
-          }
-        }
-      }
-      }else if(count==1){ //设备编号，查设备，并插入到result 
-        const data=await prisma.equipment.findFirst({
-          where:{id:param},
-          include:{
-            project:true,
-            workstations:{
-              include:{
-                materials:true,
-              }
-            }
-          }
-        });
-        if(data&&data.workstations){ //查设备，并插入到result 
-          for(const workstation of data.workstations){
-            if(workstation.materials){
-              for(const material of workstation.materials){
-                result.push(
-                  {
-                    projectName:data.project.name,
-                    projectCode:data.project.code,
-                    projectCategory:data.project.category,
-                    equipmentCode:data.code,
-                    equipmentName:data.name,
-                    equipmentType:data.type,
-                    workstationCode:workstation.code,
-                    workstationName:workstation.name,
-                    workstationType:workstation.type,
-                    workstationDesignHours:workstation.designHours,
-                    workstationElectHours:workstation.electHours,
-                    workstationAssemblyHours:workstation.assemblyHours,
-                    materialCode:material.code,
-                    materialName:material.name,
-                    materialModelNumber:material.modelNumber,
-                    materialCategory:material.category,
-                    materialBrand:material.brand,
-                    materialLowestPrice:material.lowestPrice,
-                    materialHighestPrice:material.highestPrice,
-                    materialAveragePrice:material.averagePrice,
-                    materialRequestNumber:material.requestNumber,
-                  }
-                );
-              }
-            }
-          }
-        }
-      } else if(count==2){   //工位编号，查工位并将包含的物料插入到result 
-        const data=await prisma.workstation.findFirst({
-          where:{id:param},
-          include:{
-            materials:true,
-            equipment:{
-              include:{
-                project:true
-              }
-            }
-          }
-        });
-        if(data&&data.materials){
-          //result.push(...data.materials);
-          for(const material of data.materials){
-            result.push({
-              projectName:data.equipment.project.name,
-              projectCode:data.equipment.project.code,
-              projectCategory:data.equipment.project.category,
-              equipmentCode:data.equipment.code,
-              equipmentName:data.equipment.name,
-              equipmentType:data.equipment.type,
-              workstationCode:data.code,
-              workstationName:data.name,
-              workstationType:data.type,
-              workstationDesignHours:data.designHours,
-              workstationElectHours:data.electHours,
-              workstationAssemblyHours:data.assemblyHours,
-              materialCode:material.code,
-              materialName:material.name,
-              materialModelNumber:material.modelNumber,
-              materialCategory:material.category,
-              materialBrand:material.brand,
-              materialLowestPrice:material.lowestPrice,
-              materialHighestPrice:material.highestPrice,
-              materialAveragePrice:material.averagePrice,
-              materialRequestNumber:material.requestNumber,
-            });
-
-          }
-        }
-      }else if(count==3){ //物料编号，直接查物料并插入到result 
-        const data=await prisma.material.findFirst({
-          where:{id:param},
-          include:{
-            workstation:{
-              include:{
-                equipment:{
-                  include:{
-                    project:true
-                  }
-                }
-              }
-            }
-          }
-        });
-        if(data){
-          result.push({
-            projectName:data.workstation.equipment.project.name,
-            projectCode:data.workstation.equipment.project.code,
-            projectCategory:data.workstation.equipment.project.category,
-            equipmentCode:data.workstation.equipment.code,
-            equipmentName:data.workstation.equipment.name,
-            equipmentType:data.workstation.equipment.type,
-            workstationCode:data.workstation.code,
-            workstationName:data.workstation.name,
-            workstationType:data.workstation.type,
-            materialCode:data.code,
-            materialName:data.name,
-            materialModelNumber:data.modelNumber,
-            materialCategory:data.category,
-            materialBrand:data.brand,
-            materialLowestPrice:data.lowestPrice,
-            materialHighestPrice:data.highestPrice,
-            materialAveragePrice:data.averagePrice,
-            materialRequestNumber:data.requestNumber,
-          });
-        }
-      }
-    }
-    if(ifExcel){
-      const excelData=[]
-      for(const item of result){
-        excelData.push({
-          项目名称:item.projectName,
-          项目编号:item.projectCode,
-          项目分类:item.projectCategory,
-          设备编号:item.equipmentCode,
-          设备名称:item.equipmentName,
-          设备类型:item.equipmentType,
-          工位编号:item.workstationCode,
-          工位名称:item.workstationName,
-          工位类型:item.workstationType,
-          设计工时:item.workstationDesignHours,
-          电气工时:item.workstationElectHours,
-          装配工时:item.workstationAssemblyHours,
-          物料编号:item.materialCode,
-          物料名称:item.materialName,
-          需求数量:item.materialRequestNumber,
-          物料分类:item.materialCategory,
-          型号图号:item.materialModelNumber,
-          品牌:item.materialBrand,
-          最低价:item.materialLowestPrice,
-          最高价:item.materialHighestPrice,
-          均价:item.materialAveragePrice, 
-        });
-      }
-      return excelData;
-    }
-    return result;
   }
   async getDataByCode_excel(params:Array<string>){
     let result=[];
@@ -681,7 +471,11 @@ class DataFilteringService {
     const equipmentList: Equipment[] = []
     const workStationList: Workstation[] = []
     const materialList: Material[] = []
+    const errorList: string[] = []; //存储重复的料号
+    let iferror=false;  //是否存在重复的料号
+    let rowID=5;
     for (const row of rows) {
+      rowID++;
       if (!row[2] || !row[4] || !row[7] || !row[13]) {
         console.log('数据缺失:', row)
         continue
@@ -765,9 +559,16 @@ class DataFilteringService {
           updatedAt: new Date(),
         })
       } else {
-        console.log('数据已存在：', materialId)
+        iferror=true;
+        errorList.push(materialId+','+rowID);
+        //console.log('数据已存在：', materialId)
       }
     }
+    if(iferror){
+      const errorMessage="存在重复项："+errorList.join(';');
+      throw new CustomError(501,errorMessage); //抛出错误
+    }
+
     await prisma.project.createMany({
       data: projectList,
     })
@@ -849,6 +650,41 @@ class DataFilteringService {
     } catch (error) {
       console.error('导出数据时出错:', error)
     }
+  }
+  async deleteItem(Codes:string[]){ //删除指定项目,传入参数为相关id 
+    //如果传入的参数为项目编号，则删除该项目下的所有数据，以此类推。
+    try{
+      for(const code of Codes){
+        const count=code.split('=').length-1;
+        if(count==3){
+          await prisma.material.delete({
+          where:{id:code}
+        });
+      }else if(count==2){
+        await prisma.workstation.delete({
+          include:{
+            materials:true
+          },
+          where:{id:code}
+        });
+      }else if(count==1){
+        await prisma.equipment.delete({
+          include:{
+            workstations:{
+              include:{
+                materials:true
+              }
+            }
+          },
+          where:{id:code}
+        });
+      }
+    }
+  } catch(error){
+      console.error('删除数据时出错:', error)
+      throw new CustomError(501,'删除数据时出错');
+    }
+    return true;
   }
   async exportDataToExcel_byCode(params:string[] | undefined) {
     const data=await this.getDataByCode_excel(params);

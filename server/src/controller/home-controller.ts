@@ -6,6 +6,7 @@ import homeService from '../service/home-service'
 import dataFilteringService from '../service/dataFiltering.service'
 import 'koa-body'
 import { createContext } from 'vm'
+import { Next } from 'koa'
 /**
  * 返回hello world
  * @param ctx
@@ -89,9 +90,15 @@ export const getData = async (ctx: Context) => {
 export const uploadFile = async (ctx: Context) => {
   const files = ctx.request.files
   const res = await dataFilteringService.parseExcel(files)
-  ctx.body = res
+  ctx.body = res;
 }
 export const resetTable = async (ctx: Context) => {
   const res = await dataFilteringService.resetTable()
   ctx.body = res
 }
+export const deleteItem = async (ctx: Context) => {
+  const { codes } = ctx.request.body as { codes: string[] }
+  const res = await dataFilteringService.deleteItem(codes)
+  ctx.body = res
+}
+
