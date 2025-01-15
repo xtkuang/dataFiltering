@@ -98,7 +98,7 @@ export const resetTable = async (ctx: Context) => {
 }
 export const deleteItem = async (ctx: Context) => {
   const { codes } = ctx.request.body as { codes: string[] }
-  const res = await dataFilteringService.deleteItem(codes)
+  const res = await dataFilteringService.deleteItem(codes);
   ctx.body = res
 }
 
