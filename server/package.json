@@ -1,11 +1,11 @@
 {
-  "name": "ts-koa-starter",
+  "name": "erm-server",
   "version": "1.0.0",
-  "description": "一个简单的koa+typescript+typeorm的起手式",
+  "description": "ERM-server",
   "tags": [
-    "orm",
     "typescript",
-    "koa"
+    "koa",
+    "prisma"
   ],
   "scripts": {
     "start": "nodemon",
@@ -28,6 +28,7 @@
     "koa-bodyparser": "^4.4.1",
     "koa-multer": "^1.0.2",
     "koa2-cors": "^2.0.6",
+    "mssql": "^11.0.1",
     "multer": "^1.4.5-lts.1",
     "node-windows": "^1.0.0-beta.8",
     "xlsx": "^0.18.5"

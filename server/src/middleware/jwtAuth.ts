@@ -6,7 +6,7 @@ function jwtAuthMiddleware() {
   return async (ctx: Koa.Context, next: Koa.Next) => {
     const token = ctx.headers.authorization?.split(' ')[1] // Bearer token
 
-    console.log('path:', ctx.path)
+    // console.log('path:', ctx.path)
     if (whiteList.includes(ctx.path)) {
       return await next()
     }
@@ -19,7 +19,11 @@ function jwtAuthMiddleware() {
     }
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
-      ctx.state.user = decoded
+      ctx.state.user = decoded as {
+        name: string
+        id: string
+        role: string
+      }
       ctx.state.token = token
     } catch (error) {
       throw new CustomError(401, '未授权')

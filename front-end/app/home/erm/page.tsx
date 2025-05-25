@@ -329,6 +329,7 @@ const ErmTable = observer(
       <Table
         className={className}
         ref={tableRef}
+        // virtual //虚拟滚动
         rowClassName={(value) => {
           const id = value.id
           const projectId = ermData.selectedProject?.id
@@ -360,7 +361,7 @@ const ErmTable = observer(
           return {
             onClick: () => {
               callBack(index ?? 0)
-              console.log(record, index)
+              // console.log(record, index)
             },
           }
         }}
@@ -393,7 +394,8 @@ const UploadButton: React.FC = () => {
         message.success(`${info.file.name} file uploaded successfully`)
         ermData.getRemoteData()
       } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} file upload failed.`)
+        message.error(`${info.file.name} file upload failed:
+          ${info.file.response?.msg}`)
       }
     },
   }
