@@ -28,6 +28,7 @@ import { useState } from 'react'
 import { FilterDropdownProps } from 'antd/es/table/interface'
 import { getToken } from '@/utils/cookie'
 import Search from './search'
+
 export default observer(function Home() {
   // useEffect(() => {
   //   ermData.getRemoteData().then((res) => {
@@ -36,6 +37,28 @@ export default observer(function Home() {
   // }, [])
   const [handleFetch, setHandleFetch] = useState(true)
   const { ermData } = useStores()
+
+  const [priceLoading, setPriceLoading] = useState(-1)
+  const setPriceLoadingState = (index: number) => {
+    setPriceLoading(index)
+  }
+  useEffect(() => {
+    if (priceLoading >= 0) {
+      const key = 'priceGet' + priceLoading
+      message.info({
+        content: '价格正在加载...',
+        key,
+        duration: 0,
+      })
+      // setTimeout(() => {
+      //   message.success({ content: '加载成功', key, duration: 2 })
+      // }, 3000)
+      ermData.getPrice().then(() => {
+        message.success({ content: '加载成功', key, duration: 2 })
+      })
+      setPriceLoading(-1)
+    }
+  }, [priceLoading])
   useEffect(() => {
     if (handleFetch) {
       ermData.getRemoteData()
@@ -118,6 +141,7 @@ export default observer(function Home() {
               dataSource={ermData.randerProjects}
               callBack={(index) => {
                 ermData.setSelectedProject(index)
+                setPriceLoadingState(index)
               }}
             />
           </div>

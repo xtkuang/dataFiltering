@@ -260,6 +260,36 @@ class ErmData {
       })
     })
   }
+  async getPrice() {
+    const price = await DataFilterApi.getPriceDataByProjectCode(
+      this.selectedProject?.code as string
+    ).then((res) => {
+      runInAction(() => {
+        this.selectedProject?.equipments.forEach((equipment) => {
+          equipment.workstations.forEach((workstation) => {
+            workstation.materials.forEach((material) => {
+              const price = res.data.find(
+                (item: any) => item.materialCode === material.code
+              ) as {
+                materialCode: string
+                highestPrice: number
+                lowestPrice: number
+                averagePrice: number
+              }
+              if (price) {
+                material.highestPrice = price.highestPrice
+                material.lowestPrice = price.lowestPrice
+                material.averagePrice = price.averagePrice
+              }
+            })
+          })
+        })
+      })
+      return res.data
+    })
+    return price.data
+  }
+
   get randerEquipmentData() {
     return this.selectedProject?.equipments
   }

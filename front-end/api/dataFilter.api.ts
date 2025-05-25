@@ -10,6 +10,14 @@ class DataFilterApi {
   async searchText(query: string) {
     return request.get(`/erm/search?query=${query}`)
   }
+  async getPriceDataByProjectCode(projectCode: string) {
+    return request('/erm/getPriceByProjectCode', {
+      method: 'POST',
+      data: {
+        projectCode,
+      },
+    })
+  }
   async exportExcel(exportArray: string[]) {
     return request(`/erm/exportByCode`, {
       method: 'POST',
