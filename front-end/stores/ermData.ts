@@ -261,9 +261,9 @@ class ErmData {
     })
   }
   async getPrice() {
-    const price = await DataFilterApi.getPriceDataByProjectCode(
-      this.selectedProject?.code as string
-    ).then((res) => {
+    const price = await DataFilterApi.getPriceDataByProjectCode([
+      this.selectedProject?.code as string,
+    ]).then((res) => {
       runInAction(() => {
         this.selectedProject?.equipments.forEach((equipment) => {
           equipment.workstations.forEach((workstation) => {

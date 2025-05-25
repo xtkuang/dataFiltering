@@ -46,15 +46,17 @@ export default observer(function Home() {
     if (priceLoading >= 0) {
       const key = 'priceGet' + priceLoading
       message.info({
-        content: '价格正在加载...',
+        content: '项目：' + ermData.selectedProject?.code + ' 价格正在加载...',
         key,
         duration: 0,
       })
-      // setTimeout(() => {
-      //   message.success({ content: '加载成功', key, duration: 2 })
-      // }, 3000)
+
       ermData.getPrice().then(() => {
-        message.success({ content: '加载成功', key, duration: 2 })
+        message.success({
+          content: '项目：' + ermData.selectedProject?.code + ' 价格加载成功',
+          key,
+          duration: 2,
+        })
       })
       setPriceLoading(-1)
     }
