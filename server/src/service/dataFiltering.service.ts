@@ -14,6 +14,9 @@ class DataFilteringService {
       const fileBuffer = fs.readFileSync(filePath)
       const workbook = XLSX.read(fileBuffer, { type: 'buffer' })
       const worksheet = workbook.Sheets[workbook.SheetNames[0]]
+      if (worksheet['!merges'] && worksheet['!merges'].length > 0) {
+        throw new CustomError(501, '存在合并单元格')
+      }
       const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
       const rows = data.slice(4)
 
@@ -193,10 +196,10 @@ class DataFilteringService {
       // }
       console.log('数据解析完成')
       n++
-      return data
+      return { success: true, data: data } //返回解析后的数据
     } catch (error) {
       console.error(error)
-      throw new CustomError(501, error.message)
+      throw new CustomError(501, '数据解析失败:' + error.name + error.message)
     }
   } //数据解析服务
 
@@ -681,7 +684,11 @@ class DataFilteringService {
     const workStationList: Workstation[] = []
     const materialList: Material[] = []
     const startIndex = 5
+    const errorList: string[] = [] //存储重复的料号
+    let iferror = false //是否存在重复的料号
+    let rowID = 5
     for (const [index, row] of rows.entries()) {
+      rowID++
       if (!row[2] || !row[4] || !row[7] || !row[13]) {
         throw new CustomError(5001, `第${index + startIndex}行编号缺失`)
       }

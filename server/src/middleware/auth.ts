@@ -26,6 +26,7 @@ const authMiddleware = async (ctx: Koa.Context, next: Koa.Next) => {
       '/user/updatePassword',
       '/user/add',
       '/user/delete',
+      '/erm/deleteItem', //普通用户不得删除项目相关数据。
     ]
     if (blackList.includes(ctx.path)) {
       ctx.status = 203 // 禁止访问

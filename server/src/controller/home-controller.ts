@@ -7,6 +7,7 @@ import dataFilteringService from '../service/dataFiltering.service'
 import 'koa-body'
 import { createContext } from 'vm'
 import { CustomError } from '../error'
+import { Next } from 'koa'
 /**
  * 返回hello world
  * @param ctx
