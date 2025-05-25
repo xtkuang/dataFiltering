@@ -9,6 +9,8 @@ import {
   exportDataToExcel,
   exportDataToExcelByCode,
   deleteProjectById,
+  getPrice,
+  getPriceByProjectCode,
 } from './controller/home-controller'
 import {
   getUser,
@@ -49,4 +51,6 @@ export default [
   { path: '/erm/export', type: 'get', action: exportDataToExcel },
   { path: '/erm/exportByCode', type: 'post', action: exportDataToExcelByCode },
   { path: '/erm/deleteProject', type: 'get', action: deleteProjectById },
+  { path:"/erm/getPrice",type:"post",action:getPrice},
+  {path:'/erm/getPriceByProjectCode',type:'post',action:getPriceByProjectCode},
 ]

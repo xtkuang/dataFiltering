@@ -8,6 +8,7 @@ import 'koa-body'
 import { createContext } from 'vm'
 import { CustomError } from '../error'
 import { Next } from 'koa'
+import DataGetService from "../service/erpData.service"
 /**
  * 返回hello world
  * @param ctx
@@ -38,11 +39,13 @@ export const getPersonInfo = async (ctx: Context) => {
   const res = await homeService.getPersonInfo(queryParams)
   ctx.body = res
 }
+
 export const searchText = async (ctx: Context) => {
   const { query } = ctx.request.query
   const res = await dataFilteringService.searchAllTables(query as string)
   return res
 }
+
 export const exportDataToExcel = async (ctx: Context) => {
   const { projectCode } = ctx.request.query as { projectCode: string }
   const codes = projectCode?.split(',')
@@ -107,5 +110,21 @@ export const deleteProjectById = async (ctx: Context) => {
   const { projectId } = ctx.params
   console.log(projectId)
   const res = await dataFilteringService.deleteProjectById(projectId)
+  return res
+}
+
+export const getPriceByProjectCode = async (ctx: Context) => {
+  const projectCode = ctx.request.body['projectCode']
+  const materialCodes = await DataGetService.getCodeByProjectCode(
+    projectCode
+  )
+  const res = await DataGetService.getDataFromWebPai(materialCodes)
+  return res
+}
+export const getPrice = async (ctx: Context) => {
+  const params = ctx.request.body
+  console.log(params);
+  const materialIdList = params['materialIdList']
+  const res = await DataGetService.getDataFromWebPai(materialIdList);
   return res
 }
