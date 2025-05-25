@@ -8,7 +8,7 @@ import {
   searchText,
   exportDataToExcel,
   exportDataToExcelByCode,
-  deleteItem,
+  deleteProjectById,
 } from './controller/home-controller'
 import {
   getUser,
@@ -48,5 +48,5 @@ export default [
   { path: '/erm/reset', type: 'post', action: dataFiltering.resetTable },
   { path: '/erm/export', type: 'get', action: exportDataToExcel },
   { path: '/erm/exportByCode', type: 'post', action: exportDataToExcelByCode },
-  { path: '/erm/delete', type: 'post', action: deleteItem },
+  { path: '/erm/deleteProject', type: 'get', action: deleteProjectById },
 ]

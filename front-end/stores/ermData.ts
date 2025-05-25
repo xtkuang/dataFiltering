@@ -249,6 +249,7 @@ class ErmData {
   setSelectedMaterial(materialIndex: number) {
     if (this.selectedWorkstation) {
       this.selectedMaterial = this.selectedWorkstation?.materials[materialIndex]
+      console.log(this.selectedMaterial)
     }
   }
   async getRemoteData() {
