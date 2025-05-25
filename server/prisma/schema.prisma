@@ -10,6 +10,7 @@ datasource db {
   url = "file:./dev.db"
 }
 
+
 model User {
   id        String   @id @default(cuid()) //默认生成的id
   username  String   @unique
@@ -79,5 +80,26 @@ model Material {
   workstationId String   //工位id
   createdAt     DateTime    @default(now()) //默认生成时间
   updatedAt     DateTime    @updatedAt //更新时间
+}
+model ErpSyncRecord {
+  id            String    @id @default(cuid())
+  sourceId      String    @unique // 外部系统的原始ID
+  materialCode  String    // 物料编号
+  materialName  String    // 物料名称
+  projectCode   String    // 项目编号
+  equipmentCode String    // 设备编号
+  workstationCode String  // 工位编号
+  requestNumber String    // 需求数量
+  category      String    // 物料分类
+  modelNumber   String    // 型号/图号
+  brand         String    // 品牌
+  lowestPrice   Float     // 最低价
+  highestPrice  Float     // 最高价
+  averagePrice  Float     // 均价
+  syncStatus    String    // 同步状态: 'pending', 'synced', 'error'
+  syncMessage   String?   // 同步错误信息
+  syncedAt      DateTime? // 最后同步时间
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
