@@ -51,13 +51,22 @@ export default observer(function Home() {
         duration: 0,
       })
 
-      ermData.getPrice().then(() => {
-        message.success({
-          content: '项目：' + ermData.selectedProject?.code + ' 价格加载成功',
-          key,
-          duration: 2,
+      ermData
+        .getPrice()
+        .then(() => {
+          message.success({
+            content: '项目：' + ermData.selectedProject?.code + ' 价格加载成功',
+            key,
+            duration: 2,
+          })
         })
-      })
+        .catch(() => {
+          message.error({
+            content: '项目：' + ermData.selectedProject?.code + ' 价格加载失败',
+            key,
+            duration: 2,
+          })
+        })
       setPriceLoading(-1)
     }
   }, [priceLoading])
