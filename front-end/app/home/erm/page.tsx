@@ -131,7 +131,7 @@ export default observer(function Home() {
   ]
   return (
     <>
-      <div className="flex flex-col justify-between h-full gap-4 pb-4">
+      <div className="flex flex-col justify-between h-full gap-2 pb-4">
         <div className="basis-1/12 flex gap-4">
           <UploadButton />
           <ExportButton></ExportButton>
@@ -242,6 +242,59 @@ const ErmTable = observer(
       },
       onSelect: (changedRow, selected, selectedRows, nativeEvent) => {
         ermData.setExportTree([changedRow.id], selected)
+
+        // 当勾选时，触发与点击相同的操作，展示下一级内容
+        if (selected) {
+          const dataType = ermData.getDataType(changedRow as DataType)
+          const currentIndex =
+            dataSource?.findIndex((item) => item.id === changedRow.id) ?? -1
+
+          if (currentIndex >= 0) {
+            // 根据数据类型调用相应的回调函数
+            switch (dataType) {
+              case 'project':
+                // 勾选项目时，自动选中第一个设备
+                callBack(currentIndex)
+                const project = changedRow as ProjectType
+                if (project.equipments && project.equipments.length > 0) {
+                  // 如果有设备，自动选中第一个设备
+                  setTimeout(() => {
+                    ermData.setSelectedEquipment(0)
+                  }, 100)
+                }
+                break
+              case 'equipment':
+                // 勾选设备时，自动选中第一个工位
+                callBack(currentIndex)
+                const equipment = changedRow as EquipmentType
+                if (
+                  equipment.workstations &&
+                  equipment.workstations.length > 0
+                ) {
+                  // 如果有工位，自动选中第一个工位
+                  setTimeout(() => {
+                    ermData.setSelectedWorkstation(0)
+                  }, 100)
+                }
+                break
+              case 'workstation':
+                // 勾选工位时，自动选中第一个物料
+                callBack(currentIndex)
+                const workstation = changedRow as WorkstationType
+                if (workstation.materials && workstation.materials.length > 0) {
+                  // 如果有物料，自动选中第一个物料
+                  setTimeout(() => {
+                    ermData.setSelectedMaterial(0)
+                  }, 100)
+                }
+                break
+              case 'material':
+                // 物料是最底层，不需要展示下一级
+                callBack(currentIndex)
+                break
+            }
+          }
+        }
       },
       selectedRowKeys: ermData.exportArray,
       // onSelect: (selected, type, changeRows) => {
