@@ -279,7 +279,7 @@ class ErmData {
               if (price) {
                 material.highestPrice = price.highestPrice
                 material.lowestPrice = price.lowestPrice
-                material.averagePrice =price.averagePrice
+                material.averagePrice = price.averagePrice
               }
             })
           })

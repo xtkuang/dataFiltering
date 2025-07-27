@@ -20,186 +20,226 @@ class DataFilteringService {
       const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
       const rows = data.slice(4)
 
-      let n = 0
-      await this.insertData(rows)
-      // for (const row of rows) {
-      //   const ifexist_project = await prisma.project.findFirst({
-      //     where: {
-      //       code: String(row[2]),
-      //     },
-      //     include: {
-      //       equipments: true,
-      //     },
-      //   })
-      //   const ifexist_equipment = await prisma.equipment.findFirst({
-      //     where: {
-      //       code: String(row[4]),
-      //     },
-      //     include: {
-      //       workstations: true,
-      //     },
-      //   })
-      //   const ifexist_workStation = await prisma.workstation.findFirst({
-      //     where: {
-      //       code: String(row[7]),
-      //     },
-      //     include: {
-      //       materials: true,
-      //     },
-      //   })
-      //   if (ifexist_project && !ifexist_equipment && !ifexist_workStation) {
-      //     await prisma.project.update({
-      //       where: {
-      //         code: ifexist_project.code,
-      //       },
-      //       data: {
-      //         equipments: {
-      //           create: {
-      //             code: String(row[4]) || '',
-      //             name: String(row[5]) || '',
-      //             type: String(row[6]) || '',
-      //             workstationCode: String(row[7]) || '',
-      //           },
-      //         },
-      //       },
-      //     })
-      //     const workStation = await prisma.workstation.create({
-      //       data: {
-      //         code: String(row[7]) || '',
-      //         name: String(row[8]) || '',
-      //         type: String(row[9]) || '',
-      //         designHours: Number(row[10] || 0),
-      //         electHours: Number(row[11] || 0),
-      //         assemblyHours: Number(row[12] || 0),
-      //         equipmentCode: String(row[4]) || '',
-      //       },
-      //     })
-      //     const material = await prisma.material.create({
-      //       data: {
-      //         code: String(row[13] || ''),
-      //         name: String(row[14] || ''),
-      //         modelNumber: String(row[15] || ''),
-      //         requestNumber: String(row[16] || ''),
-      //         brand: String(row[17] || ''),
-      //         category: String(row[18] || ''),
-      //         lowestPrice: Number(row[19] || 0),
-      //         highestPrice: Number(row[20] || 0),
-      //         averagePrice: Number(row[21] || 0),
-      //         workstationCode: workStation.code,
-      //       },
-      //     })
-      //   } else if (
-      //     ifexist_project &&
-      //     ifexist_equipment &&
-      //     !ifexist_workStation
-      //   ) {
-      //     await prisma.equipment.update({
-      //       where: {
-      //         id: ifexist_equipment.id,
-      //         code: ifexist_equipment.code,
-      //       },
-      //       data: {
-      //         workstations: {
-      //           create: {
-      //             code: String(row[7]) || '',
-      //             name: String(row[8]) || '',
-      //             type: String(row[9]) || '',
-      //             designHours: Number(row[10] || 0),
-      //             electHours: Number(row[11] || 0),
-      //             assemblyHours: Number(row[12] || 0),
-      //             //equipmentCode:ifexist_equipment.code
-      //           },
-      //         },
-      //       },
-      //     })
-      //   } else if (
-      //     ifexist_project &&
-      //     ifexist_equipment &&
-      //     ifexist_workStation
-      //   ) {
-      //     const ifexist_material = await prisma.material.findFirst({
-      //       where: {
-      //         code: String(row[13] || ''),
-      //       },
-      //     })
-      //     if (!ifexist_material) {
-      //       await prisma.workstation.update({
-      //         where: {
-      //           code: ifexist_workStation.code,
-      //           id: ifexist_workStation.id,
-      //         },
-      //         data: {
-      //           materials: {
-      //             create: {
-      //               code: String(row[13] || ''),
-      //               name: String(row[14] || ''),
-      //               modelNumber: String(row[15] || ''),
-      //               requestNumber: String(row[16] || ''),
-      //               brand: String(row[17] || ''),
-      //               category: String(row[18] || ''),
-      //               lowestPrice: Number(row[19] || 0),
-      //               highestPrice: Number(row[20] || 0),
-      //               averagePrice: Number(row[21] || 0),
-      //               //workstationCode:ifexist_workStation.code
-      //             },
-      //           },
-      //         },
-      //       })
-      //     } else {
-      //       console.log('数据已存在')
-      //     }
-      //   } else if (
-      //     !ifexist_project &&
-      //     !ifexist_equipment &&
-      //     !ifexist_workStation
-      //   ) {
-      //     const project = await prisma.project.create({
-      //       data: {
-      //         code: String(row[2]) || '',
-      //         name: String(row[3]) || '',
-      //         category: String(row[1]) || '',
-      //         equipments: {
-      //           create: {
-      //             code: String(row[4]) || '',
-      //             name: String(row[5]) || '',
-      //             type: String(row[6]) || '',
-      //             workstationCode: String(row[7]) || '',
-      //             workstations: {
-      //               create: {
-      //                 code: String(row[7]) || '',
-      //                 name: String(row[8]) || '',
-      //                 type: String(row[9]) || '',
-      //                 designHours: Number(row[10] || 0),
-      //                 electHours: Number(row[11] || 0),
-      //                 assemblyHours: Number(row[12] || 0),
-      //                 //equipmentCode:String(row[4])||"",
-      //                 materials: {
-      //                   create: {
-      //                     code: String(row[13] || ''),
-      //                     name: String(row[14] || ''),
-      //                     modelNumber: String(row[15] || ''),
-      //                     requestNumber: String(row[16] || ''),
-      //                     brand: String(row[17] || ''),
-      //                     category: String(row[18] || ''),
-      //                     lowestPrice: Number(row[19]) || 0,
-      //                     highestPrice: Number(row[20]) || 0,
-      //                     averagePrice: Number(row[21]) || 0,
-      //                   },
-      //                 },
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //     })
-      //   }
-      // }
-      console.log('数据解析完成')
-      n++
-      return { success: true, data: data } //返回解析后的数据
+      // 记录错误行信息，增加更详细的错误位置信息
+      const errorRows: Array<{
+        rowNumber: number
+        reason: string
+        data: any
+        columnInfo?: string // 新增：具体列信息
+        cellValue?: any // 新增：具体单元格值
+      }> = []
+
+      // 过滤出有效的行数据
+      const validRows = rows.filter((row: any, index: number) => {
+        const rowNumber = index + 5 // 实际Excel行号（从第5行开始）
+
+        // 跳过空行
+        if (!row || row.length === 0 || row.every((cell: any) => !cell)) {
+          errorRows.push({
+            rowNumber,
+            reason: '空行，已跳过',
+            data: row,
+          })
+          return false
+        }
+
+        // 检查必填字段，并记录具体缺失的字段
+        const missingFields = []
+        if (!row[2]) missingFields.push('项目编号(C列)')
+        if (!row[4]) missingFields.push('设备编号(E列)')
+        if (!row[7]) missingFields.push('工位编号(H列)')
+        if (!row[13]) missingFields.push('物料编号(N列)')
+
+        if (missingFields.length > 0) {
+          errorRows.push({
+            rowNumber,
+            reason: `必填字段缺失: ${missingFields.join(', ')}`,
+            data: row,
+            columnInfo: missingFields.join(', '),
+          })
+          return false
+        }
+
+        // 检查数据类型
+        try {
+          // 检查工时字段是否为数字（如果存在）
+          if (
+            row[10] !== undefined &&
+            row[10] !== null &&
+            row[10] !== '' &&
+            isNaN(Number(row[10]))
+          ) {
+            errorRows.push({
+              rowNumber,
+              reason: '设计工时不是有效数字',
+              data: row,
+              columnInfo: 'K列(设计工时)',
+              cellValue: row[10],
+            })
+            return false
+          }
+          if (
+            row[11] !== undefined &&
+            row[11] !== null &&
+            row[11] !== '' &&
+            isNaN(Number(row[11]))
+          ) {
+            errorRows.push({
+              rowNumber,
+              reason: '电气工时不是有效数字',
+              data: row,
+              columnInfo: 'L列(电气工时)',
+              cellValue: row[11],
+            })
+            return false
+          }
+          if (
+            row[12] !== undefined &&
+            row[12] !== null &&
+            row[12] !== '' &&
+            isNaN(Number(row[12]))
+          ) {
+            errorRows.push({
+              rowNumber,
+              reason: '装配工时不是有效数字',
+              data: row,
+              columnInfo: 'M列(装配工时)',
+              cellValue: row[12],
+            })
+            return false
+          }
+
+          // 检查价格字段是否为数字（如果存在）
+          if (
+            row[19] !== undefined &&
+            row[19] !== null &&
+            row[19] !== '' &&
+            isNaN(Number(row[19]))
+          ) {
+            errorRows.push({
+              rowNumber,
+              reason: '最低价不是有效数字',
+              data: row,
+              columnInfo: 'T列(最低价)',
+              cellValue: row[19],
+            })
+            return false
+          }
+          if (
+            row[20] !== undefined &&
+            row[20] !== null &&
+            row[20] !== '' &&
+            isNaN(Number(row[20]))
+          ) {
+            errorRows.push({
+              rowNumber,
+              reason: '最高价不是有效数字',
+              data: row,
+              columnInfo: 'U列(最高价)',
+              cellValue: row[20],
+            })
+            return false
+          }
+          if (
+            row[21] !== undefined &&
+            row[21] !== null &&
+            row[21] !== '' &&
+            isNaN(Number(row[21]))
+          ) {
+            errorRows.push({
+              rowNumber,
+              reason: '均价不是有效数字',
+              data: row,
+              columnInfo: 'V列(均价)',
+              cellValue: row[21],
+            })
+            return false
+          }
+
+          // 检查价格逻辑合理性
+          if (
+            row[19] !== undefined &&
+            row[20] !== undefined &&
+            row[19] !== null &&
+            row[20] !== null &&
+            row[19] !== '' &&
+            row[20] !== '' &&
+            Number(row[19]) > Number(row[20])
+          ) {
+            errorRows.push({
+              rowNumber,
+              reason: '最低价不能大于最高价',
+              data: row,
+              columnInfo: 'T列(最低价)和U列(最高价)',
+              cellValue: `最低价: ${row[19]}, 最高价: ${row[20]}`,
+            })
+            return false
+          }
+        } catch (error) {
+          errorRows.push({
+            rowNumber,
+            reason: '数据类型转换失败',
+            data: row,
+            columnInfo: '未知列',
+            cellValue: '转换失败',
+          })
+          return false
+        }
+
+        return true
+      })
+
+      console.log(
+        `总行数: ${rows.length}, 有效行数: ${validRows.length}, 错误行数: ${errorRows.length}`
+      )
+
+      // 如果有错误行，输出详细信息
+      if (errorRows.length > 0) {
+        console.log('=== 错误行详情 ===')
+        errorRows.forEach((error) => {
+          console.log(`第${error.rowNumber}行: ${error.reason}`)
+          if (error.columnInfo) {
+            console.log(`错误位置: ${error.columnInfo}`)
+          }
+          if (error.cellValue !== undefined) {
+            console.log(`错误值: ${error.cellValue}`)
+          }
+          if (error.data && error.data.length > 0) {
+            console.log(
+              `数据: [${error.data.map((cell: any) => cell || '').join(', ')}]`
+            )
+          }
+        })
+        console.log('=== 错误行详情结束 ===')
+      }
+
+      // 处理有效数据
+      if (validRows.length > 0) {
+        try {
+          await this.insertData(validRows)
+          console.log('有效数据解析完成')
+        } catch (insertError) {
+          console.error('数据插入失败:', insertError)
+          throw new CustomError(502, '数据插入失败: ' + insertError.message)
+        }
+      } else {
+        console.log('没有有效数据需要处理')
+      }
+
+      return {
+        success: true,
+        totalRows: rows.length,
+        validRows: validRows.length,
+        errorRows: errorRows.length,
+        errorDetails: errorRows,
+        message: `解析完成。总行数: ${rows.length}, 成功处理: ${validRows.length}, 跳过错误行: ${errorRows.length}`,
+      }
     } catch (error) {
-      console.error(error)
-      throw new CustomError(501, '数据解析失败:' + error.name + error.message)
+      console.error('Excel解析错误:', error)
+      if (error instanceof CustomError) {
+        throw error
+      }
+      throw new CustomError(501, '数据解析失败: ' + error.message)
     }
   } //数据解析服务
 
@@ -675,129 +715,191 @@ class DataFilteringService {
     }
   }
   async insertData(rows: any) {
-    const existedProject = await prisma.project.findMany()
-    const existedEquipment = await prisma.equipment.findMany()
-    const existedWorkStation = await prisma.workstation.findMany()
-    const existedMaterial = await prisma.material.findMany()
-    const projectList: Project[] = []
-    const equipmentList: Equipment[] = []
-    const workStationList: Workstation[] = []
-    const materialList: Material[] = []
-    const startIndex = 5
-    const errorList: string[] = [] //存储重复的料号
-    let iferror = false //是否存在重复的料号
-    let rowID = 5
-    for (const [index, row] of rows.entries()) {
-      rowID++
-      if (!row[2] || !row[4] || !row[7] || !row[13]) {
-        throw new CustomError(5001, `第${index + startIndex}行编号缺失`)
+    try {
+      const existedProject = await prisma.project.findMany()
+      const existedEquipment = await prisma.equipment.findMany()
+      const existedWorkStation = await prisma.workstation.findMany()
+      const existedMaterial = await prisma.material.findMany()
+      const projectList: Project[] = []
+      const equipmentList: Equipment[] = []
+      const workStationList: Workstation[] = []
+      const materialList: Material[] = []
+      const startIndex = 5
+      const errorList: Array<{
+        rowNumber: number
+        materialId: string
+        reason: string
+      }> = [] //存储重复的料号和错误信息
+      let iferror = false //是否存在重复的料号
+      let rowID = 5
+
+      for (const [index, row] of rows.entries()) {
+        const currentRowNumber = index + startIndex
+        rowID++
+        try {
+          // 注意：这里不再需要检查必填字段，因为在parseExcel中已经过滤过了
+          // 但为了安全起见，再次验证数据完整性
+          if (!row[2] || !row[4] || !row[7] || !row[13]) {
+            console.warn(`第${currentRowNumber}行数据不完整，跳过处理`)
+            continue
+          }
+
+          const projectId = String(row[2])
+          const equipmentId = projectId + '=' + String(row[4])
+          const workStationId =
+            projectId + '=' + String(row[4]) + '=' + String(row[7])
+          const materialId =
+            projectId +
+            '=' +
+            String(row[4]) +
+            '=' +
+            String(row[7]) +
+            '=' +
+            String(row[13])
+
+          // 检查项目是否已存在
+          if (
+            !existedProject.some((project) => project.id === projectId) &&
+            !projectList.some((project) => project.id === projectId)
+          ) {
+            projectList.push({
+              id: projectId,
+              name: String(row[3] || ''),
+              code: String(row[2] || ''),
+              category: String(row[1] || ''),
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })
+          }
+
+          // 检查设备是否已存在
+          if (
+            !existedEquipment.some(
+              (equipment) => equipment.id === equipmentId
+            ) &&
+            !equipmentList.some((equipment) => equipment.id === equipmentId)
+          ) {
+            equipmentList.push({
+              id: equipmentId,
+              name: String(row[5] || ''),
+              code: String(row[4] || ''),
+              type: String(row[6] || ''),
+              projectId: projectId,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })
+          }
+
+          // 检查工位是否已存在
+          if (
+            !existedWorkStation.some(
+              (workStation) => workStation.id === workStationId
+            ) &&
+            !workStationList.some(
+              (workStation) => workStation.id === workStationId
+            )
+          ) {
+            workStationList.push({
+              id: workStationId,
+              name: String(row[8] || ''),
+              code: String(row[7] || ''),
+              type: String(row[9] || ''),
+              designHours: Number(row[10] || 0),
+              electHours: Number(row[11] || 0),
+              assemblyHours: Number(row[12] || 0),
+              equipmentId: equipmentId,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })
+          }
+
+          // 检查物料是否已存在
+          if (
+            !existedMaterial.some((material) => material.id === materialId) &&
+            !materialList.some((material) => material.id === materialId)
+          ) {
+            materialList.push({
+              id: materialId,
+              name: String(row[14] || ''),
+              code: String(row[13] || ''),
+              modelNumber: String(row[15] || ''),
+              requestNumber: String(row[16] || ''),
+              brand: String(row[17] || ''),
+              category: String(row[18] || ''),
+              lowestPrice: Number(row[19] || 0),
+              highestPrice: Number(row[20] || 0),
+              averagePrice: Number(row[21] || 0),
+              workstationId: workStationId,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })
+          } else {
+            // 记录重复的物料，包含行号信息
+            console.log(`第${currentRowNumber}行物料数据已存在：`, materialId)
+            errorList.push({
+              rowNumber: currentRowNumber,
+              materialId: materialId,
+              reason: '物料编号重复',
+            })
+            iferror = true
+          }
+        } catch (rowError) {
+          console.error(`处理第${currentRowNumber}行时发生错误:`, rowError)
+          errorList.push({
+            rowNumber: currentRowNumber,
+            materialId: '未知',
+            reason: `数据处理错误: ${rowError.message}`,
+          })
+          iferror = true
+          continue // 跳过这一行，继续处理下一行
+        }
       }
 
-      const projectId = String(row[2])
-      const equipmentId = projectId + '=' + String(row[4])
-      const workStationId =
-        projectId + '=' + String(row[4]) + '=' + String(row[7])
-      const materialId =
-        projectId +
-        '=' +
-        String(row[4]) +
-        '=' +
-        String(row[7]) +
-        '=' +
-        String(row[13])
+      // 批量插入数据，使用事务确保数据一致性
+      await prisma.$transaction(async (tx) => {
+        if (projectList.length > 0) {
+          await tx.project.createMany({
+            data: projectList,
+          })
+          console.log(`成功插入 ${projectList.length} 个项目`)
+        }
 
-      if (
-        !existedProject.some((project) => project.id === projectId) &&
-        !projectList.some((project) => project.id === projectId)
-      ) {
-        projectList.push({
-          id: projectId,
-          name: String(String(row[3])) || '',
-          code: String(String(row[2])) || '',
-          category: String(String(row[1])) || '',
-          createdAt: new Date(),
-          updatedAt: new Date(),
+        if (equipmentList.length > 0) {
+          await tx.equipment.createMany({
+            data: equipmentList,
+          })
+          console.log(`成功插入 ${equipmentList.length} 个设备`)
+        }
+
+        if (workStationList.length > 0) {
+          await tx.workstation.createMany({
+            data: workStationList,
+          })
+          console.log(`成功插入 ${workStationList.length} 个工位`)
+        }
+
+        if (materialList.length > 0) {
+          await tx.material.createMany({
+            data: materialList,
+          })
+          console.log(`成功插入 ${materialList.length} 个物料`)
+        }
+      })
+
+      console.log('数据插入完成')
+      if (iferror) {
+        console.log('=== 插入错误详情 ===')
+        errorList.forEach((error) => {
+          console.log(
+            `第${error.rowNumber}行: ${error.reason} - 物料ID: ${error.materialId}`
+          )
         })
+        console.log('=== 插入错误详情结束 ===')
       }
-      if (
-        !existedEquipment.some((equipment) => equipment.id === equipmentId) &&
-        !equipmentList.some((equipment) => equipment.id === equipmentId)
-      ) {
-        equipmentList.push({
-          id: equipmentId,
-          name: String(row[5]) || '',
-          code: String(row[4]) || '',
-          type: String(row[6]) || '',
-          projectId: projectId,
-
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-      }
-      if (
-        !existedWorkStation.some(
-          (workStation) => workStation.id === workStationId
-        ) &&
-        !workStationList.some((workStation) => workStation.id === workStationId)
-      ) {
-        workStationList.push({
-          id: workStationId,
-          name: String(row[8]) || '',
-          code: String(row[7]) || '',
-          type: String(row[9]) || '',
-          designHours: Number(row[10]) || 0,
-          electHours: Number(row[11]) || 0,
-          assemblyHours: Number(row[12]) || 0,
-          equipmentId: equipmentId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-      }
-      if (
-        !existedMaterial.some((material) => material.id === materialId) &&
-        !materialList.some((material) => material.id === materialId)
-      ) {
-        materialList.push({
-          id: materialId,
-          name: row[14] as string,
-          code: row[13] as string,
-          modelNumber: String(row[15]) || '',
-          requestNumber: String(row[16]) || '',
-          brand: String(row[17]) || '',
-          category: String(row[18]) || '',
-          lowestPrice: Number(row[19]) || 0,
-          highestPrice: Number(row[20]) || 0,
-          averagePrice: Number(row[21]) || 0,
-          workstationId: workStationId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-      } else {
-        //累计需求数量
-        //删除指定项目
-        //brand：undifined ok
-
-        //相同料号报错
-        //行合并数据如何处理
-        console.log('数据已存在：', materialId)
-
-        //采购表，库存表的获取相关数据的接口，需要接口和调用说明
-        //采购表，库存表存在哪一个数据库表单中
-      }
+    } catch (error) {
+      console.error('数据插入过程中发生错误:', error)
+      throw new CustomError(503, '数据插入失败: ' + error.message)
     }
-
-    await prisma.project.createMany({
-      data: projectList,
-    })
-    await prisma.equipment.createMany({
-      data: equipmentList,
-    })
-    await prisma.workstation.createMany({
-      data: workStationList,
-    })
-    await prisma.material.createMany({
-      data: materialList,
-    })
   }
   async deleteProjectById(projectId: string) {
     try {
