@@ -8,6 +8,7 @@ api_sdk = K3CloudApiSdk("http://10.6.0.11/k3cloud/")
 api_sdk.Init(config_path='./conf.ini', config_node='config')
 
 app = Flask(__name__)
+
 @app.route('/getPrice', methods=['POST'])
 def get_price():
     data = request.get_json()
@@ -17,7 +18,7 @@ def get_price():
         return jsonify({'error': '未提供物料ID列表'}), 400
     
     # 分批处理，每批25个物料ID
-    batch_size = 25
+    batch_size = 100
     all_results = []
     
     for i in range(0, len(material_id_list), batch_size):
@@ -58,5 +59,12 @@ def get_price():
         return jsonify({'data': all_results})
     else:
         return jsonify({'error': '未找到任何物料价格'}), 404
+
+# 添加健康检查端点
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({'status': 'healthy', 'service': 'PriceGetService'})
+
 if __name__ == '__main__':
+    # 开发环境使用
     app.run(debug=True, host='0.0.0.0', port=5000)

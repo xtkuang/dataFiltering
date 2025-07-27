@@ -14,9 +14,9 @@ class DataFilteringService {
       const fileBuffer = fs.readFileSync(filePath)
       const workbook = XLSX.read(fileBuffer, { type: 'buffer' })
       const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-      if (worksheet['!merges'] && worksheet['!merges'].length > 0) {
-        throw new CustomError(501, '存在合并单元格')
-      }
+      // if (worksheet['!merges'] && worksheet['!merges'].length > 0) {
+      //   throw new CustomError(501, '存在合并单元格')
+      // }
       const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
       const rows = data.slice(4)
 

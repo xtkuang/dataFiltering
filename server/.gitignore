@@ -6,3 +6,5 @@ upload
 prisma/dev.db
 prisma/dev.db-journal
 prisma/migrations/*
+priceget/SDK_Python3.0_V8.2.0/*
+priceget/conf.ini
