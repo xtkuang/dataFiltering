@@ -125,7 +125,7 @@ export default observer(function Home() {
     { title: '型号/图号', dataIndex: 'modelNumber', align: 'center' },
     { title: '需求数量', dataIndex: 'requestNumber', align: 'center' },
     { title: '品牌', dataIndex: 'brand', align: 'center' },
-    { title: '最低价', dataIndex: 'lowestPrice', align: 'center' },
+    { title: '最低价', dataIndex: 'lowestPrice', align: 'center'},
     { title: '最高价', dataIndex: 'highestPrice', align: 'center' },
     { title: '均价', dataIndex: 'averagePrice', align: 'center' },
   ]
@@ -396,6 +396,9 @@ const ErmTable = observer(
     })
     columns = columns.map((column) => {
       if ('dataIndex' in column) {
+        // 检查是否为价格相关列
+        const isPriceColumn = ['lowestPrice', 'highestPrice', 'averagePrice'].includes(column.dataIndex as string)
+        
         return {
           ...column,
           // ...getColumnSearchProps(column.dataIndex as DataIndex),
@@ -403,11 +406,23 @@ const ErmTable = observer(
             showTitle: false,
           },
 
-          render: (value) => (
-            <Tooltip placement="topLeft" title={value}>
-              {value}
-            </Tooltip>
-          ),
+          render: (value) => {
+            // 如果是价格列且值不为空，则格式化为两位小数
+            if (isPriceColumn && value !== null && value !== undefined && value !== '') {
+              const formattedValue = Number(value).toFixed(2)
+              return (
+                <Tooltip placement="topLeft" title={formattedValue}>
+                  {formattedValue}
+                </Tooltip>
+              )
+            }
+            
+            return (
+              <Tooltip placement="topLeft" title={value}>
+                {value}
+              </Tooltip>
+            )
+          },
         }
       }
       return column

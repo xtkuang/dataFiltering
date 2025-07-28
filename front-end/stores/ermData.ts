@@ -277,9 +277,9 @@ class ErmData {
                 averagePrice: number
               }
               if (price) {
-                material.highestPrice = price.highestPrice
-                material.lowestPrice = price.lowestPrice
-                material.averagePrice = price.averagePrice
+                material.highestPrice = Number(price.highestPrice.toFixed(2))
+                material.lowestPrice = Number(price.lowestPrice.toFixed(2))
+                material.averagePrice = Number(price.averagePrice.toFixed(2))
               }
             })
           })

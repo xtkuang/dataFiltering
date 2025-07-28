@@ -14,11 +14,11 @@ class DataFilteringService {
       const fileBuffer = fs.readFileSync(filePath)
       const workbook = XLSX.read(fileBuffer, { type: 'buffer' })
       const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-      // if (worksheet['!merges'] && worksheet['!merges'].length > 0) {
-      //   throw new CustomError(501, '存在合并单元格')
-      // }
       const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
       const rows = data.slice(4)
+
+      // 获取合并单元格信息
+      const merges = worksheet['!merges'] || []
 
       // 记录错误行信息，增加更详细的错误位置信息
       const errorRows: Array<{
@@ -29,9 +29,30 @@ class DataFilteringService {
         cellValue?: any // 新增：具体单元格值
       }> = []
 
+      // 检查指定行是否包含合并单元格
+      const isRowContainsMergedCells = (rowIndex: number) => {
+        const actualRowIndex = rowIndex + 4 // 转换为实际Excel行索引（从第5行开始）
+        return merges.some((merge: any) => {
+          const mergeStartRow = merge.s.r
+          const mergeEndRow = merge.e.r
+          return actualRowIndex >= mergeStartRow && actualRowIndex <= mergeEndRow
+        })
+      }
+
       // 过滤出有效的行数据
       const validRows = rows.filter((row: any, index: number) => {
         const rowNumber = index + 5 // 实际Excel行号（从第5行开始）
+
+        // 检查是否包含合并单元格
+        if (isRowContainsMergedCells(index)) {
+          errorRows.push({
+            rowNumber,
+            reason: '包含合并单元格，已跳过',
+            data: row,
+            columnInfo: '整行',
+          })
+          return false
+        }
 
         // 跳过空行
         if (!row || row.length === 0 || row.every((cell: any) => !cell)) {
@@ -214,32 +235,60 @@ class DataFilteringService {
       }
 
       // 处理有效数据
+      let insertSuccessCount = 0
+      let insertErrorCount = 0
+      let insertErrorDetails: any[] = []
+
       if (validRows.length > 0) {
         try {
-          await this.insertData(validRows)
+          const insertResult = await this.insertData(validRows)
+          insertSuccessCount = insertResult.successCount || 0
+          insertErrorCount = insertResult.errorCount || 0
+          insertErrorDetails = insertResult.errorDetails || []
           console.log('有效数据解析完成')
         } catch (insertError) {
           console.error('数据插入失败:', insertError)
-          throw new CustomError(502, '数据插入失败: ' + insertError.message)
+          // 不抛出错误，而是记录错误信息，让解析过程继续
+          insertErrorCount = validRows.length
+          insertErrorDetails.push({
+            reason: '数据插入失败',
+            error: insertError.message
+          })
         }
       } else {
         console.log('没有有效数据需要处理')
       }
 
+      // 合并所有错误信息
+      const allErrorDetails = [...errorRows, ...insertErrorDetails]
+
       return {
         success: true,
         totalRows: rows.length,
         validRows: validRows.length,
-        errorRows: errorRows.length,
-        errorDetails: errorRows,
-        message: `解析完成。总行数: ${rows.length}, 成功处理: ${validRows.length}, 跳过错误行: ${errorRows.length}`,
+        processedRows: insertSuccessCount,
+        errorRows: errorRows.length + insertErrorCount,
+        errorDetails: allErrorDetails,
+        message: `解析完成。总行数: ${rows.length}, 有效行数: ${validRows.length}, 成功处理: ${insertSuccessCount}, 跳过错误行: ${errorRows.length + insertErrorCount}`,
       }
     } catch (error) {
       console.error('Excel解析错误:', error)
-      if (error instanceof CustomError) {
-        throw error
+      // 返回错误信息而不是抛出异常，让调用方决定如何处理
+      return {
+        success: false,
+        totalRows: 0,
+        validRows: 0,
+        processedRows: 0,
+        errorRows: 1,
+        errorDetails: [{
+          rowNumber: -1,
+          reason: 'Excel解析失败',
+          data: null,
+          columnInfo: '整个文件',
+          cellValue: error.message
+        }],
+        message: `解析失败: ${error.message}`,
       }
-      throw new CustomError(501, '数据解析失败: ' + error.message)
     }
   } //数据解析服务
 
@@ -360,9 +409,9 @@ class DataFilteringService {
                       materialModelNumber: material.modelNumber,
                       materialCategory: material.category,
                       materialBrand: material.brand,
-                      materialLowestPrice: material.lowestPrice,
-                      materialHighestPrice: material.highestPrice,
-                      materialAveragePrice: material.averagePrice,
+                      materialLowestPrice: Number(material.lowestPrice.toFixed(2)),
+                      materialHighestPrice: Number(material.highestPrice.toFixed(2)),
+                      materialAveragePrice: Number(material.averagePrice.toFixed(2)),
                       materialRequestNumber: material.requestNumber,
                     })
                   }
@@ -407,9 +456,9 @@ class DataFilteringService {
                   materialModelNumber: material.modelNumber,
                   materialCategory: material.category,
                   materialBrand: material.brand,
-                  materialLowestPrice: material.lowestPrice,
-                  materialHighestPrice: material.highestPrice,
-                  materialAveragePrice: material.averagePrice,
+                  materialLowestPrice: Number(material.lowestPrice.toFixed(2)),
+                  materialHighestPrice: Number(material.highestPrice.toFixed(2)),
+                  materialAveragePrice: Number(material.averagePrice.toFixed(2)),
                   materialRequestNumber: material.requestNumber,
                 })
               }
@@ -450,9 +499,9 @@ class DataFilteringService {
               materialModelNumber: material.modelNumber,
               materialCategory: material.category,
               materialBrand: material.brand,
-              materialLowestPrice: material.lowestPrice,
-              materialHighestPrice: material.highestPrice,
-              materialAveragePrice: material.averagePrice,
+              materialLowestPrice: Number(material.lowestPrice.toFixed(2)),
+              materialHighestPrice: Number(material.highestPrice.toFixed(2)),
+              materialAveragePrice: Number(material.averagePrice.toFixed(2)),
               materialRequestNumber: material.requestNumber,
             })
           }
@@ -489,9 +538,9 @@ class DataFilteringService {
             materialModelNumber: data.modelNumber,
             materialCategory: data.category,
             materialBrand: data.brand,
-            materialLowestPrice: data.lowestPrice,
-            materialHighestPrice: data.highestPrice,
-            materialAveragePrice: data.averagePrice,
+            materialLowestPrice: Number(data.lowestPrice.toFixed(2)),
+            materialHighestPrice: Number(data.highestPrice.toFixed(2)),
+            materialAveragePrice: Number(data.averagePrice.toFixed(2)),
             materialRequestNumber: data.requestNumber,
           })
         }
@@ -519,9 +568,9 @@ class DataFilteringService {
           物料分类: item.materialCategory,
           型号图号: item.materialModelNumber,
           品牌: item.materialBrand,
-          最低价: item.materialLowestPrice,
-          最高价: item.materialHighestPrice,
-          均价: item.materialAveragePrice,
+          最低价: Number(item.materialLowestPrice.toFixed(2)),
+          最高价: Number(item.materialHighestPrice.toFixed(2)),
+          均价: Number(item.materialAveragePrice.toFixed(2)),
         })
       }
       return excelData
@@ -569,9 +618,9 @@ class DataFilteringService {
             物料分类: data.category,
             型号图号: data.modelNumber,
             品牌: data.brand,
-            最低价: data.lowestPrice,
-            最高价: data.highestPrice,
-            均价: data.averagePrice,
+            最低价: Number(data.lowestPrice.toFixed(2)),
+            最高价: Number(data.highestPrice.toFixed(2)),
+            均价: Number(data.averagePrice.toFixed(2)),
           })
         }
       } else {
@@ -826,9 +875,9 @@ class DataFilteringService {
               requestNumber: String(row[16] || ''),
               brand: String(row[17] || ''),
               category: String(row[18] || ''),
-              lowestPrice: Number(row[19] || 0),
-              highestPrice: Number(row[20] || 0),
-              averagePrice: Number(row[21] || 0),
+              lowestPrice: Number((Number(row[19] || 0)).toFixed(2)),
+              highestPrice: Number((Number(row[20] || 0)).toFixed(2)),
+              averagePrice: Number((Number(row[21] || 0)).toFixed(2)),
               workstationId: workStationId,
               createdAt: new Date(),
               updatedAt: new Date(),
@@ -856,35 +905,46 @@ class DataFilteringService {
       }
 
       // 批量插入数据，使用事务确保数据一致性
-      await prisma.$transaction(async (tx) => {
-        if (projectList.length > 0) {
-          await tx.project.createMany({
-            data: projectList,
-          })
-          console.log(`成功插入 ${projectList.length} 个项目`)
-        }
+      try {
+        await prisma.$transaction(async (tx) => {
+          if (projectList.length > 0) {
+            await tx.project.createMany({
+              data: projectList,
+            })
+            console.log(`成功插入 ${projectList.length} 个项目`)
+          }
 
-        if (equipmentList.length > 0) {
-          await tx.equipment.createMany({
-            data: equipmentList,
-          })
-          console.log(`成功插入 ${equipmentList.length} 个设备`)
-        }
+          if (equipmentList.length > 0) {
+            await tx.equipment.createMany({
+              data: equipmentList,
+            })
+            console.log(`成功插入 ${equipmentList.length} 个设备`)
+          }
 
-        if (workStationList.length > 0) {
-          await tx.workstation.createMany({
-            data: workStationList,
-          })
-          console.log(`成功插入 ${workStationList.length} 个工位`)
-        }
+          if (workStationList.length > 0) {
+            await tx.workstation.createMany({
+              data: workStationList,
+            })
+            console.log(`成功插入 ${workStationList.length} 个工位`)
+          }
 
-        if (materialList.length > 0) {
-          await tx.material.createMany({
-            data: materialList,
-          })
-          console.log(`成功插入 ${materialList.length} 个物料`)
-        }
-      })
+          if (materialList.length > 0) {
+            await tx.material.createMany({
+              data: materialList,
+            })
+            console.log(`成功插入 ${materialList.length} 个物料`)
+          }
+        })
+      } catch (transactionError) {
+        console.error('事务执行失败:', transactionError)
+        // 记录事务错误，但不中断整个处理流程
+        errorList.push({
+          rowNumber: -1, // 表示整个事务的错误
+          materialId: '事务错误',
+          reason: `数据库事务失败: ${transactionError.message}`,
+        })
+        iferror = true
+      }
 
       console.log('数据插入完成')
       if (iferror) {
@@ -895,6 +955,12 @@ class DataFilteringService {
           )
         })
         console.log('=== 插入错误详情结束 ===')
+      }
+
+      return {
+        successCount: materialList.length,
+        errorCount: errorList.length,
+        errorDetails: errorList
       }
     } catch (error) {
       console.error('数据插入过程中发生错误:', error)
@@ -1015,9 +1081,9 @@ class DataFilteringService {
                 物料分类: material.category,
                 型号图号: material.modelNumber,
                 品牌: material.brand,
-                最低价: material.lowestPrice,
-                最高价: material.highestPrice,
-                均价: material.averagePrice,
+                最低价: Number(material.lowestPrice.toFixed(2)),
+                最高价: Number(material.highestPrice.toFixed(2)),
+                均价: Number(material.averagePrice.toFixed(2)),
               })
             }
           }

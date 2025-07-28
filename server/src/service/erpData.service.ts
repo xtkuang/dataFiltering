@@ -97,10 +97,10 @@ class DataGetService {
                     return null; // 跳过没有有效价格的物料
                 }
                 
-                // 计算最高价、最低价和平均价
-                const highestPrice = Math.max(...validPrices);
-                const lowestPrice = Math.min(...validPrices);
-                const averagePrice = Number((validPrices.reduce((sum, price) => sum + price, 0) / validPrices.length).toFixed(5));
+                // 计算最高价、最低价和平均价，保留两位小数
+                const highestPrice = Number(Math.max(...validPrices).toFixed(2));
+                const lowestPrice = Number(Math.min(...validPrices).toFixed(2));
+                const averagePrice = Number((validPrices.reduce((sum, price) => sum + price, 0) / validPrices.length).toFixed(2));
                 
                 // 更新数据库中对应物料的价格信息
                 return prisma.material.updateMany({
@@ -136,9 +136,9 @@ class DataGetService {
                 
                 return {
                     materialCode,
-                    highestPrice: Math.max(...validPrices),
-                    lowestPrice: Math.min(...validPrices),
-                    averagePrice: Number((validPrices.reduce((sum, price) => sum + price, 0) / validPrices.length).toFixed(5))
+                    highestPrice: Number(Math.max(...validPrices).toFixed(2)),
+                    lowestPrice: Number(Math.min(...validPrices).toFixed(2)),
+                    averagePrice: Number((validPrices.reduce((sum, price) => sum + price, 0) / validPrices.length).toFixed(2))
                 };
             });
         
